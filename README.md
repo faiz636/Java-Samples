@@ -1,2 +1,2 @@
 # Java-Samples
-Javva GUI practice
+Java GUI practice

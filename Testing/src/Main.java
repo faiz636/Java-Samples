@@ -1,5 +1,8 @@
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseApp;
 import com.firebase.client.FirebaseError;
 
 import java.io.IOException;
@@ -19,6 +22,8 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("ending main thread");
+//        System.exit(1);
+//        Runtime.getRuntime().
     }
 }
 
@@ -57,11 +62,13 @@ class FirebaseThread implements Runnable {
         loginUser("a@b.com", "123");
         sendData();
 //        waitToCompleteOperation();//not needed here as of now waiting for each individual operation where needed
+//        Thread.currentThread().stop();
+//        mRootRef.unauth();
     }
 
     public void sendData() {
         mWait = true;
-        mRootRef.child("test").setValue("checking validation...", new Firebase.CompletionListener() {
+        mRootRef.child("test").setValue("Building jar file2...", new Firebase.CompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                 if (firebaseError == null) {
@@ -75,6 +82,7 @@ class FirebaseThread implements Runnable {
             }
         });
         waitToCompleteOperation();
+        System.out.println("data sent");
     }
 
     public void createUser(String email, String pass) {
@@ -131,8 +139,10 @@ class FirebaseThread implements Runnable {
     }
 
     public void waitToCompleteOperation() {
+        System.out.println("waiting start");
         while (mWait) {
             try {
+                System.out.println("waiting");
                 Thread.sleep(2000);
                 if (!netIsAvailable()) {
                     System.out.println("Connection Lost");
@@ -141,6 +151,7 @@ class FirebaseThread implements Runnable {
                 e.printStackTrace();
             }
         }
+        System.out.println("waiting end");
     }
 
     public void processErrorCode(FirebaseError firebaseError) {

@@ -7,27 +7,33 @@ import java.util.ArrayList;
 import jxl.*;
 import jxl.read.biff.BiffException;
 
-public class Main {
+public class ExcelToJava {
 
-    public static void main(String[] args) {
-        readExcel();
-    }
-
-    private static void readExcel() {
+    /**
+     * Returns the data of Excel file as an object.
+     *
+     * @param path Path of the file i.e sheet.xls
+     * @return the data present in the file
+     */
+    public static SheetData readFile(String path) {
         try {
-            Workbook workbook = Workbook.getWorkbook(new File("sheet.xls"));
+            Workbook workbook = Workbook.getWorkbook(new File(path));
             Sheet sheet = workbook.getSheet(0);
             SheetData sheetData= new SheetData();
 
             for(int i=0; i<=15; i++){
                 SheetRow sheetRow = new SheetRow();
                 for (int j=0; j<=7; j++){
+                    /*
+                    This will print each cell before adding it into the column..
+                    if(j==0) System.out.println();
                     System.out.print(sheet.getCell(j,i).getContents() + "   ");
+                    */
                     sheetRow.setColumn(sheet.getCell(j,i).getContents());
                 }
-                System.out.println();
                 sheetData.setRow(sheetRow);
             }
+            return sheetData;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -35,6 +41,7 @@ public class Main {
             e.printStackTrace();
         }
 
+        return null;
     }
 
 //    private static void function() {

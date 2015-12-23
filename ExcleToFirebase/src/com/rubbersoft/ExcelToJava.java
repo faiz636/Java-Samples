@@ -23,7 +23,9 @@ public class ExcelToJava {
             Sheet sheet = workbook.getSheet(0);
             SheetData sheetData= new SheetData();
 
-            for(int i=0; i<=15; i++){
+            int size = workbook.getSheet(0).getRows();
+
+            for(int i=0; i<size; i++){
                 SheetRow sheetRow = new SheetRow();
                 for (int j=0; j<=7; j++){
                     /*
@@ -35,6 +37,7 @@ public class ExcelToJava {
                 }
                 sheetData.addRow(sheetRow);
             }
+            workbook.close();
             return sheetData;
 
         } catch (IOException e) {

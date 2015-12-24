@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,16 +21,15 @@ public class FirebaseThread implements Runnable {
 
     private static final String FIREBASE_URL = "https://incandescent-torch-9709.firebaseio.com/";
     private boolean mWait;
-    Thread mThread;
+    private Thread mThread;
     private Firebase mRootRef;
     private AuthData mUserAuth;
-    SheetData data;
+    private ArrayList<SheetData> sheetDataList;
 
-    public FirebaseThread(SheetData data) {
-        if (!(data.size() > 0)) return;
+    public FirebaseThread(ArrayList<SheetData> sheetDataList) {
         this.mThread = new Thread(this, "FirebaseThread");
         mRootRef = new Firebase(FIREBASE_URL);
-        this.data = data;
+        this.sheetDataList = sheetDataList;
         this.mWait = true;
         mThread.start();
         mThread.isAlive();
@@ -37,7 +37,6 @@ public class FirebaseThread implements Runnable {
 
     @Override
     public void run() {
-        if (!(data.size() > 0)) return;
         checkForInterNetConnection();
 //        createUser("a@b.com", "123");
         //login is required because authentication is applied in firebase
@@ -90,23 +89,28 @@ public class FirebaseThread implements Runnable {
      */
     private void sendData() {
         mWait = true;
-        for (SheetRow item : data.getAllRows()) {
-            mRootRef.child("test").push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
-                @Override
-                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                    if (firebaseError == null) {
-                        System.out.println("row sent");
-                    } else {
-                        processErrorCode(firebaseError);
-                    }
+        for (int i=0;i<4;i++) {
+            ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
+            System.out.println("sending node "+ (i+1) + " data, size : " +list.size());
+            for (SheetRow item : list) {
+                mRootRef.child("node"+ (i+1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        if (firebaseError == null) {
+                            System.out.println("row sent");
+                        } else {
+                            processErrorCode(firebaseError);
+                        }
 //                System.out.println(firebaseError);
 //                System.out.println(firebase);
-                    mWait = false;
-                }
-            });
-            waitToCompleteOperation();
+                        mWait = false;
+                    }
+                });
+                waitToCompleteOperation();
+            }
+            System.out.println("All rows sent");
         }
-        System.out.println("All rows sent");
+        System.out.println("All nodes data sent");
     }
 
     /**

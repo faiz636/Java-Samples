@@ -2,6 +2,7 @@ package com.rubbersoft;
 
 import com.rubbersoft.model.SheetData;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,22 +20,17 @@ public class Main {
 
     //    this will read the file periodically and print its size
     public static void fileReaderTask() {
-        Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                SheetData sheetData = ExcelToJava.readFile("sheet.xls");
-                if (sheetData == null) return;
-                System.out.println("rows added in excle file : " + sheetData.size());
-                if (sheetData.size() > 0) {
-                    new FirebaseThread(sheetData);
-                }
-                //shutting down the scheduler is necessary else it program will not terminate.
-//                scheduler.shutdown();
-            }
-        };
-
-//        scheduler.schedule(task,100, TimeUnit.MILLISECONDS);
-        scheduler.scheduleAtFixedRate(task, INITIAL_DELAY, PERIOD, TimeUnit.SECONDS);
+        ArrayList<SheetData> sheetDataList = ExcelToJava.readFile("sheet.xls");
+        if (sheetDataList == null) return;
+        FirebaseThread ft = new FirebaseThread(sheetDataList);
+        try {
+            ft.getThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
+        //shutting down the scheduler is necessary else it program will not terminate.
+        scheduler.shutdown();
     }
 
 }

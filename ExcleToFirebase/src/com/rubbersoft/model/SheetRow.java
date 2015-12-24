@@ -1,6 +1,7 @@
 package com.rubbersoft.model;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Muhammad Muzammil on 22-Dec-15.
@@ -72,5 +73,56 @@ public class SheetRow {
      */
     public int size() {
         return this.column.size();
+    }
+
+
+    /**
+     * This class will be used to send data to Firebase
+     * It will be passed SheetRow object from which
+     * it will store as required for extract the data
+     * in the required format
+    * */
+    public static class FirebaseData {
+        private long timestamp;
+        private float temperature,LPGConcentration;
+
+        FirebaseData(){}
+
+        public FirebaseData(SheetRow row){
+            timestamp = new GregorianCalendar(
+                    Integer.parseInt(row.getColumn(0)),//year
+                    Integer.parseInt(row.getColumn(1)),//month
+                    Integer.parseInt(row.getColumn(2)),//date
+                    Integer.parseInt(row.getColumn(3)),//hour
+                    Integer.parseInt(row.getColumn(4)),//minute
+                    (int)Float.parseFloat(row.getColumn(5))//second
+            ).getTimeInMillis();
+            temperature = Integer.parseInt(row.getColumn(6));//temperature
+            LPGConcentration = Integer.parseInt(row.getColumn(7));//LPGConcentration
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public float getTemperature() {
+            return temperature;
+        }
+
+        public void setTemperature(float temperature) {
+            this.temperature = temperature;
+        }
+
+        public float getLPGConcentration() {
+            return LPGConcentration;
+        }
+
+        public void setLPGConcentration(float LPGConcentration) {
+            this.LPGConcentration = LPGConcentration;
+        }
     }
 }

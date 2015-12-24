@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class SheetData {
 
-    ArrayList<SheetRow> rows;
+    private ArrayList<SheetRow> rows;
     public SheetData(){
         rows = new ArrayList<SheetRow>();
     }
@@ -43,12 +43,23 @@ public class SheetData {
 
 
     /**
-     * Add a rows at the end of sheet
+     * Add a row at the end of sheet
      *
      * @param row  rows to be add the end of sheet
      */
     public void addRow(SheetRow row) {
         this.rows.add(row);
+    }
+
+
+
+    /**
+     * Add a rows at the end of sheet
+     *
+     * @param rows  rows to be add the end of sheet
+     */
+    public void addRow(SheetData rows) {
+        this.rows.addAll(rows.getAllRows());
     }
 
 

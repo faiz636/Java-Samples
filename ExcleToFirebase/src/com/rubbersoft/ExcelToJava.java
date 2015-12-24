@@ -17,6 +17,8 @@ public class ExcelToJava {
      * @return the data present in the file
      */
 
+    private static int START_POINT;
+
     public static SheetData readFile(String path) {
         try {
             Workbook workbook = Workbook.getWorkbook(new File(path));
@@ -25,7 +27,7 @@ public class ExcelToJava {
 
             int size = workbook.getSheet(0).getRows();
 
-            for(int i=0; i<size; i++){
+            for(int i=START_POINT; i<size; i++){
                 SheetRow sheetRow = new SheetRow();
                 for (int j=0; j<=7; j++){
                     /*
@@ -37,6 +39,7 @@ public class ExcelToJava {
                 }
                 sheetData.addRow(sheetRow);
             }
+            START_POINT = size;
             workbook.close();
             return sheetData;
 

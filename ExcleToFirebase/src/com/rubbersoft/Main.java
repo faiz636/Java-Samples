@@ -8,26 +8,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static final int INITIAL_DELAY = 5,PERIOD = 5;
+    private static final int INITIAL_DELAY = 5,PERIOD = 10;
 
     private static final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
-
-/*
-        SheetData sheetData = ExcelToJava.readFile("sheet.xls");
-        System.out.println(sheetData.size());
-
-//        printing whole sheet
-        for(int i=0; i<sheetData.size(); i++){
-            for(int j=0; j<sheetData.getRow(i).size(); j++){
-                System.out.print(sheetData.getRow(i).getColumn(j) + "   ");
-            }
-            System.out.println();
-        }
-*/
-
         fileReaderTask();
     }
 

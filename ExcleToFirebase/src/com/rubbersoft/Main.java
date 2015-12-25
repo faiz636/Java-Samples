@@ -3,6 +3,7 @@ package com.rubbersoft;
 import com.rubbersoft.model.SheetData;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,12 @@ public class Main {
             Executors.newScheduledThreadPool(5);
 
     public static void main(String[] args) {
+        scheduleTask();
+        exitProcedure();
+    }
+
+    //    schedule task for running periodically
+    private static void scheduleTask() {
         Runnable task = new Runnable() {
             @Override
             public void run() {
@@ -24,16 +31,40 @@ public class Main {
         scheduler.scheduleAtFixedRate(task, Main.INITIAL_DELAY, Main.PERIOD, TimeUnit.MINUTES);
     }
 
-    //    this will read the file periodically and print its size
+    //    take exit command and start exit procedure
+    private static void exitProcedure() {
+        Scanner in = new Scanner(System.in);
+        String s;
+
+        do {
+            System.out.print("enter string  :");
+        } while (!((s = in.nextLine()).contentEquals("exit")));
+
+        System.out.println("shut down sequence started.");
+        scheduler.shutdown();
+
+        while (!scheduler.isTerminated()) {
+            try {
+                System.out.println("please wait for pending execution to complete...");
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("exiting..");
+        System.exit(0);
+    }
+
+
+    //    read the file and send it to firebase
     public static void fileReaderTask() {
-        long t;
-        t = System.currentTimeMillis();
+//        long t;
+//        t = System.currentTimeMillis();
         ArrayList<SheetData> sheetDataList = ExcelToJava.readFile("sheet.xls");
-        System.out.println("file reading total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
-        t = System.currentTimeMillis();
-        FirebaseDataSender ft = new FirebaseDataSender(sheetDataList);
-        System.out.println("sending data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
-//        System.exit(0);
+//        System.out.println("file reading total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
+//        t = System.currentTimeMillis();
+        new FirebaseDataSender(sheetDataList);
+//        System.out.println("sending data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
     }
 
 }

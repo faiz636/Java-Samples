@@ -11,9 +11,6 @@ public class Main {
 
     private static final int INITIAL_DELAY = 5, PERIOD = 20;
 
-    private static final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(1);
-
     public static void main(String[] args) {
         fileReaderTask();
     }
@@ -29,8 +26,6 @@ public class Main {
             e.printStackTrace();
         }
         System.exit(0);
-        //shutting down the scheduler is necessary else it program will not terminate.
-        scheduler.shutdown();
     }
 
 }

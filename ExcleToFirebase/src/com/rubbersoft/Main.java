@@ -17,14 +17,18 @@ public class Main {
 
     //    this will read the file periodically and print its size
     public static void fileReaderTask() {
+//        long t;
+//        t = System.currentTimeMillis();
         ArrayList<SheetData> sheetDataList = ExcelToJava.readFile("sheet.xls");
-        if (sheetDataList == null) return;
+//        System.out.println("total time taken "+ (System.currentTimeMillis()-t) +"ms, " + ( (System.currentTimeMillis()-t)/(1000))+"sec");
+//        t = System.currentTimeMillis();
         FirebaseThread ft = new FirebaseThread(sheetDataList);
         try {
             ft.getThread().join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+//        System.out.println("total time taken "+ (System.currentTimeMillis()-t) +"ms, " + ( (System.currentTimeMillis()-t)/(1000))+"sec");
         System.exit(0);
     }
 

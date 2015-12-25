@@ -32,19 +32,12 @@ public class FirebaseThread implements Runnable {
         this.sheetDataList = sheetDataList;
         this.mWait = true;
         mThread.start();
-        mThread.isAlive();
     }
 
     @Override
     public void run() {
         checkForInterNetConnection();
-//        createUser("a@b.com", "123");
-        //login is required because authentication is applied in firebase
-        loginUser("a@b.com", "123");
         sendData();
-//        waitToCompleteOperation();//not needed here as of now waiting for each individual operation where needed
-//        Thread.currentThread().stop();
-//        mRootRef.unauth();
     }
 
     /**
@@ -54,7 +47,7 @@ public class FirebaseThread implements Runnable {
         while (!netIsAvailable()) {
             System.out.println("Internet Connection Not Available, Retrying In 5 sec...");
             try {
-                Thread.sleep(5000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -88,11 +81,13 @@ public class FirebaseThread implements Runnable {
      * After completion next item in the collection will be sent
      */
     private void sendData() {
-        mWait = true;
+        final int[] wait = {0};
         for (int i=0;i<4;i++) {
             ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
             System.out.println("sending node "+ (i+1) + " data, size : " +list.size());
             for (SheetRow item : list) {
+                mWait = true;
+                wait[0]++;
                 mRootRef.child("node"+ (i+1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
@@ -101,70 +96,14 @@ public class FirebaseThread implements Runnable {
                         } else {
                             processErrorCode(firebaseError);
                         }
-//                System.out.println(firebaseError);
-//                System.out.println(firebase);
-                        mWait = false;
+                        mWait = --wait[0]>0;
                     }
                 });
-                waitToCompleteOperation();
             }
             System.out.println("All rows sent");
         }
-        System.out.println("All nodes data sent");
-    }
-
-    /**
-     * create a user with the email and password provided for firebase authentication
-     *
-     * @param email email of the user
-     * @param pass password of the user for firebase authentication
-     */
-    public void createUser(String email, String pass) {
-        mWait = true;
-        mRootRef.createUser(email, pass, new Firebase.ValueResultHandler<Map<String, Object>>() {
-            @Override
-            public void onSuccess(Map<String, Object> result) {
-                System.out.println("Successfully created user account with uid: " + result.get("uid"));
-                mWait = false;
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                // there was an error
-                processErrorCode(firebaseError);
-                mWait = false;
-            }
-        });
-        //wait for user creation
         waitToCompleteOperation();
-    }
-
-    /**
-     * authenticate with firebase database
-     *
-     * @param email user email
-     * @param pass user password
-     * */
-    public void loginUser(String email, String pass) {
-        mWait = true;
-        System.out.println("logging in user");
-        mRootRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-                FirebaseThread.this.mUserAuth = authData;
-                mWait = false;
-            }
-
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                // there was an error
-                processErrorCode(firebaseError);
-                mWait = false;
-            }
-        });
-        waitToCompleteOperation();//this time wait for login
-        System.out.println("user logged in");
+        System.out.println("All nodes data sent");
     }
 
     /**
@@ -176,7 +115,7 @@ public class FirebaseThread implements Runnable {
         while (mWait) {
             try {
                 System.out.println("waiting");
-                Thread.sleep(2000);
+                Thread.sleep(100);
                 if (!netIsAvailable()) {
                     System.out.println("Connection Lost");
                 }

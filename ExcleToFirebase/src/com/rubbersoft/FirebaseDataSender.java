@@ -17,24 +17,22 @@ import java.util.Map;
 /**
  * Created by Faiz on 23/12/2015.
  */
-public class FirebaseThread implements Runnable {
+public class FirebaseDataSender {
 
     private static final String FIREBASE_URL = "https://incandescent-torch-9709.firebaseio.com/";
     private boolean mWait;
-    private Thread mThread;
     private Firebase mRootRef;
     private AuthData mUserAuth;
     private ArrayList<SheetData> sheetDataList;
 
-    public FirebaseThread(ArrayList<SheetData> sheetDataList) {
-        this.mThread = new Thread(this, "FirebaseThread");
+    public FirebaseDataSender(ArrayList<SheetData> sheetDataList) {
         mRootRef = new Firebase(FIREBASE_URL);
         this.sheetDataList = sheetDataList;
         this.mWait = true;
-        mThread.start();
+        run();
+//        mThread.start();
     }
 
-    @Override
     public void run() {
         checkForInterNetConnection();
         sendData();
@@ -81,14 +79,15 @@ public class FirebaseThread implements Runnable {
      * After completion next item in the collection will be sent
      */
     private void sendData() {
+        long t;
+        t = System.currentTimeMillis();
         final int[] wait = {0};
-        for (int i=0;i<4;i++) {
+        for (int i = 0; i < 4; i++) {
             ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
-            System.out.println("sending node "+ (i+1) + " data, size : " +list.size());
+            System.out.println("sending node " + (i + 1) + " data, size : " + list.size());
             for (SheetRow item : list) {
-                mWait = true;
                 wait[0]++;
-                mRootRef.child("node"+ (i+1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
+                mRootRef.child("node" + (i + 1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                         if (firebaseError == null) {
@@ -96,13 +95,17 @@ public class FirebaseThread implements Runnable {
                         } else {
                             processErrorCode(firebaseError);
                         }
-                        mWait = --wait[0]>0;
+                        mWait = --wait[0] > 0;
                     }
                 });
             }
             System.out.println("All rows sent");
         }
+        System.out.println("pushing data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
+        mWait = wait[0] > 0;
+        t = System.currentTimeMillis();
         waitToCompleteOperation();
+        System.out.println("waiit time for sending data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
         System.out.println("All nodes data sent");
     }
 
@@ -110,11 +113,12 @@ public class FirebaseThread implements Runnable {
      * Wait to complete operation from where it is called
      * when calling operation is completed
      * wait flag would be set to false
-     * */
+     */
     public void waitToCompleteOperation() {
+        int i = 0;
         while (mWait) {
             try {
-                System.out.println("waiting");
+                System.out.println("waiting" + i++);
                 Thread.sleep(100);
                 if (!netIsAvailable()) {
                     System.out.println("Connection Lost");
@@ -128,7 +132,7 @@ public class FirebaseThread implements Runnable {
 
     /**
      * process error code received from firebase
-     * */
+     */
     public void processErrorCode(FirebaseError firebaseError) {
         if (firebaseError == null) {
             return;
@@ -174,10 +178,5 @@ public class FirebaseThread implements Runnable {
         }
 
     }
-
-    public Thread getThread() {
-        return mThread;
-    }
-
 
 }

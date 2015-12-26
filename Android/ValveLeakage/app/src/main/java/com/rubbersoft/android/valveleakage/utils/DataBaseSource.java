@@ -14,16 +14,30 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by Muhammad Muzammil on 26-Dec-15.
  */
 public class DataBaseSource {
 
+    private static DataBaseSource dataBaseSource;
     SQLiteHandler sqLiteHandler;
+    public List<Data> dataNode1;
+    public List<Data> dataNode2;
+    public List<Data> dataNode3;
+    public List<Data> dataNode4;
 
-    DataBaseSource(Context context){
+    public static DataBaseSource getInstance(Context context){
+        return dataBaseSource != null ? dataBaseSource : new DataBaseSource(context);
+    }
+
+    private DataBaseSource(Context context){
         sqLiteHandler = new SQLiteHandler(context);
+        dataNode1 = new ArrayList<>();
+        dataNode2 = new ArrayList<>();
+        dataNode3 = new ArrayList<>();
+        dataNode4 = new ArrayList<>();
     }
 
     public void insertData(Data data, int tableNumber){
@@ -63,13 +77,13 @@ public class DataBaseSource {
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
 
         //Deleting from all tables one by one..
-        String query = "delete from "+ SQLiteHandler.getTableNode1() +" where lpgconcentration < " + milliSeconds;
+        String query = "delete from "+ SQLiteHandler.getTableNode1() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode2() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode2() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode3() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode3() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode4() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode4() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
 
         sqLiteDatabase.close();

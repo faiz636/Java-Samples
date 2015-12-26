@@ -15,9 +15,10 @@ public class FirebaseHandler {
 
     private FirebaseHandler() {
         firebaseRef = new Firebase(ConfigConstants.FIREBASE_URL);
+        initChildRefs();
     }
 
-    public static FirebaseHandler getOurInstance() {
+    public static FirebaseHandler getInstance() {
         return OUR_INSTANCE == null ? (OUR_INSTANCE = new FirebaseHandler()) : OUR_INSTANCE;
     }
 
@@ -32,19 +33,19 @@ public class FirebaseHandler {
         return firebaseRef;
     }
 
-    public Firebase getNode1() {
+    public Firebase getNode1Ref() {
         return node1;
     }
 
-    public Firebase getNode2() {
+    public Firebase getNode2Ref() {
         return node2;
     }
 
-    public Firebase getNode3() {
+    public Firebase getNode3Ref() {
         return node3;
     }
 
-    public Firebase getNode4() {
+    public Firebase getNode4Ref() {
         return node4;
     }
 }

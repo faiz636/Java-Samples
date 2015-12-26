@@ -34,6 +34,7 @@ public class CoreLeakageService extends Service {
         dataBaseSource.removeData(findTimeToKeepData());
         //Retrieving existing data
         populateDataNodeLists();
+        //TODO: Call MainActivity's populateListView() method..
         implementFirebaseListeners();
 
         //TODO: Implement firebase listeners correctly

@@ -47,7 +47,7 @@ public class DataBaseSource {
         Date date = new Date(data.getTimestamp());
 
 //        For conversion of timestamp to date and time
-//        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(date));
+//        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(new Date(data.getTimestamp())));
 //        AppLog.d("MuzammilQadri", "Current Time: " + new SimpleDateFormat("hh:mm:ss a").format(date));
 
         contentValues.put("timestamp", data.getTimestamp());

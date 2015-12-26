@@ -15,34 +15,29 @@ import android.widget.Toast;
 
 import com.rubbersoft.android.valveleakage.R;
 import com.rubbersoft.android.valveleakage.model.Data;
+import com.rubbersoft.android.valveleakage.model.ListAdapter;
+import com.rubbersoft.android.valveleakage.services.CoreLeakageService;
+import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 
 public class MainActivity extends AppCompatActivity {
 
     ListView listView;
-    Data[] data;
-    int i;
+    ListAdapter listAdapter;
+    DataBaseSource dataBaseSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listview);
-/*
-        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"generating notification" + i, Toast.LENGTH_SHORT).show();
-                generateNotification("",
-                        PendingIntent.getActivity(MainActivity.this,
-                                1,
-                                new Intent(MainActivity.this, MainActivity.class)
-                                , 0));
-            }
-        });
-*/
+        dataBaseSource = DataBaseSource.getInstance(getApplicationContext());
+        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
+        startService(intent);
     }
 
     public void populateListView(){
+        listAdapter = new ListAdapter(getApplicationContext(),R.layout.listview_singleitem,dataBaseSource.dataNode1);
+        listView.setAdapter(listAdapter);
 
 
     }

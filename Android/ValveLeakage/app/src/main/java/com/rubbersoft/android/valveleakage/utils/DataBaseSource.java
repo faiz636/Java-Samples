@@ -14,16 +14,30 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * Created by Muhammad Muzammil on 26-Dec-15.
  */
 public class DataBaseSource {
 
+    private static DataBaseSource dataBaseSource;
     SQLiteHandler sqLiteHandler;
+    public List<Data> dataNode1;
+    public List<Data> dataNode2;
+    public List<Data> dataNode3;
+    public List<Data> dataNode4;
 
-    DataBaseSource(Context context){
+    public static DataBaseSource getInstance(Context context){
+        return dataBaseSource != null ? dataBaseSource : new DataBaseSource(context);
+    }
+
+    private DataBaseSource(Context context){
         sqLiteHandler = new SQLiteHandler(context);
+        dataNode1 = new ArrayList<>();
+        dataNode2 = new ArrayList<>();
+        dataNode3 = new ArrayList<>();
+        dataNode4 = new ArrayList<>();
     }
 
     public void insertData(Data data, int tableNumber){
@@ -33,7 +47,7 @@ public class DataBaseSource {
         Date date = new Date(data.getTimestamp());
 
 //        For conversion of timestamp to date and time
-//        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(date));
+//        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(new Date(data.getTimestamp())));
 //        AppLog.d("MuzammilQadri", "Current Time: " + new SimpleDateFormat("hh:mm:ss a").format(date));
 
         contentValues.put("timestamp", data.getTimestamp());
@@ -63,13 +77,13 @@ public class DataBaseSource {
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
 
         //Deleting from all tables one by one..
-        String query = "delete from "+ SQLiteHandler.getTableNode1() +" where lpgconcentration < " + milliSeconds;
+        String query = "delete from "+ SQLiteHandler.getTableNode1() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode2() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode2() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode3() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode3() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
-        query = "delete from "+ SQLiteHandler.getTableNode4() +" where lpgconcentration < " + milliSeconds;
+        query = "delete from "+ SQLiteHandler.getTableNode4() +" where timestamp < " + milliSeconds;
         sqLiteDatabase.execSQL(query);
 
         sqLiteDatabase.close();

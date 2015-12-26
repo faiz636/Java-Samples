@@ -9,7 +9,7 @@ public class Data {
     private long timestamp;
     private float temperature,LPGConcentration;
 
-    Data(){}
+    public Data(){}
 
     public long getTimestamp() {
         return timestamp;

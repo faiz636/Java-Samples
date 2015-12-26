@@ -14,7 +14,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "NodesDB";
+    private static final String DATABASE_NAME = "AlmaariDB";
 
     // Table name for each node
     private static final String TABLE_NODE1 = "node1";
@@ -54,16 +54,6 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         createTableQuery(db, SQLiteHandler.TABLE_NODE4);
     }
 
-    private void createTableQuery(SQLiteDatabase db,String tableName){
-        String CREATE_TABLE_QUERY = "CREATE TABLE " + tableName + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + KEY_TIMESTAMP + " INTEGER NOT NULL,"
-                + KEY_TEMPERATURE + " REAL NOT NULL,"
-                + KEY_LPG_CONCENTRATION + " REAL  NOT NULL"
-                + ")";
-        db.execSQL(CREATE_TABLE_QUERY);
-    }
-
     /**
      * Called when the database needs to be upgraded. The implementation
      * should use this method to drop tables, add tables, or do anything else it
@@ -84,6 +74,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      * @param oldVersion The old database version.
      * @param newVersion The new database version.
      */
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 //        drop all four tables
@@ -96,8 +87,37 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    private void createTableQuery(SQLiteDatabase db,String tableName){
+        String CREATE_TABLE_QUERY = "CREATE TABLE " + tableName + "("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + KEY_TIMESTAMP + " INTEGER NOT NULL,"
+                + KEY_TEMPERATURE + " REAL NOT NULL,"
+                + KEY_LPG_CONCENTRATION + " REAL  NOT NULL"
+                + ")";
+        db.execSQL(CREATE_TABLE_QUERY);
+    }
+
+
+
+
     private void dropTable(SQLiteDatabase db, String tableName) {
 //        Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + tableName);
+    }
+
+    public static String getTableNode1() {
+        return TABLE_NODE1;
+    }
+
+    public static String getTableNode2() {
+        return TABLE_NODE2;
+    }
+
+    public static String getTableNode3() {
+        return TABLE_NODE3;
+    }
+
+    public static String getTableNode4() {
+        return TABLE_NODE4;
     }
 }

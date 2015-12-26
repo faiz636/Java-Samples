@@ -1,0 +1,64 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:background="@drawable/listview_itemdesign"
+    >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/textview_date"
+            android:text="26/12/15"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:id="@+id/textview_time"
+            android:text="7:13:00"
+            android:layout_marginBottom="4dp"/>
+
+     <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textview_date"
+            android:id="@+id/textview_temp"
+            android:text="Temerature: "/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_date"
+        android:layout_toRightOf="@+id/textview_temp"
+        android:id="@+id/textview_tempvalue"
+        android:text="12C"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textview_time"
+            android:layout_toLeftOf="@+id/textview_lpgvalue"
+            android:id="@+id/textview_lpg"
+            android:text="LPG: "/>
+
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/textview_time"
+            android:id="@+id/textview_lpgvalue"
+            android:text="12345"/>
+
+
+
+
+    </RelativeLayout>

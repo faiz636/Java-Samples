@@ -21,20 +21,25 @@ public class FirebaseDataSender {
 
     private static final String FIREBASE_URL = "https://incandescent-torch-9709.firebaseio.com/";
     private boolean mWait;
-    private Firebase mRootRef;
-    private AuthData mUserAuth;
+    private static Firebase mRootRef;
+    private static AuthData mUserAuth;
     private ArrayList<SheetData> sheetDataList;
 
-    public FirebaseDataSender(ArrayList<SheetData> sheetDataList) {
+    static {
         mRootRef = new Firebase(FIREBASE_URL);
+    }
+
+    public FirebaseDataSender(ArrayList<SheetData> sheetDataList) {
         this.sheetDataList = sheetDataList;
         this.mWait = true;
         run();
-//        mThread.start();
     }
 
     public void run() {
         checkForInterNetConnection();
+        if (mUserAuth==null){
+            loginUser("a@b.com", "123");
+        }
         sendData();
     }
 
@@ -51,6 +56,62 @@ public class FirebaseDataSender {
             }
         }
         System.out.println("Internet Available, proceeding...");
+    }
+
+
+    /**
+     * create a user with the email and password provided for firebase authentication
+     *
+     * @param email email of the user
+     * @param pass password of the user for firebase authentication
+     */
+    public void createUser(String email, String pass) {
+        mWait = true;
+        mRootRef.createUser(email, pass, new Firebase.ValueResultHandler<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                System.out.println("Successfully created user account with uid: " + result.get("uid"));
+                mWait = false;
+            }
+
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                // there was an error
+                processErrorCode(firebaseError);
+                mWait = false;
+            }
+        });
+        //wait for user creation
+        waitToCompleteOperation();
+    }
+
+    /**
+     * authenticate with firebase database
+     *
+     * @param email user email
+     * @param pass user password
+     * */
+    public synchronized void loginUser(String email, String pass) {
+        if(mUserAuth!=null) return;
+        mWait = true;
+        System.out.println("logging in user");
+        mRootRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                FirebaseDataSender.mUserAuth = authData;
+                mWait = false;
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                // there was an error
+                processErrorCode(firebaseError);
+                mWait = false;
+            }
+        });
+        waitToCompleteOperation();//this time wait for login
+        System.out.println("user logged in");
     }
 
     /**

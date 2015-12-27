@@ -77,18 +77,18 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        drop all four tables
-        dropTable(db,SQLiteHandler.TABLE_NODE1);
-        dropTable(db,SQLiteHandler.TABLE_NODE2);
-        dropTable(db,SQLiteHandler.TABLE_NODE3);
-        dropTable(db,SQLiteHandler.TABLE_NODE4);
-
-//        Create tables again
-        onCreate(db);
+////        drop all four tables
+//        dropTable(db,SQLiteHandler.TABLE_NODE1);
+//        dropTable(db,SQLiteHandler.TABLE_NODE2);
+//        dropTable(db,SQLiteHandler.TABLE_NODE3);
+//        dropTable(db,SQLiteHandler.TABLE_NODE4);
+//
+////        Create tables again
+//        onCreate(db);
     }
 
     private void createTableQuery(SQLiteDatabase db,String tableName){
-        String CREATE_TABLE_QUERY = "CREATE TABLE " + tableName + "("
+        String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS " + tableName + "("
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_TIMESTAMP + " INTEGER NOT NULL,"
                 + KEY_TEMPERATURE + " REAL NOT NULL,"
@@ -105,9 +105,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
-    public static String getTableNode1() {
-        return TABLE_NODE1;
-    }
+    public static String getTableNode1() { return TABLE_NODE1; }
 
     public static String getTableNode2() {
         return TABLE_NODE2;

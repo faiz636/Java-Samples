@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.model.Data;
 
 import java.sql.Timestamp;
@@ -21,19 +22,22 @@ import java.util.List;
  */
 public class DataBaseSource {
 
-    private static DataBaseSource dataBaseSource;
     SQLiteHandler sqLiteHandler;
     public List<Data> dataNode1;
     public List<Data> dataNode2;
     public List<Data> dataNode3;
     public List<Data> dataNode4;
 
-    public static DataBaseSource getInstance(Context context){
-        return dataBaseSource != null ? dataBaseSource : new DataBaseSource(context);
+    public static DataBaseSource getInstance(){
+        return Holder.INSTANCE;
     }
 
-    private DataBaseSource(Context context){
-        sqLiteHandler = new SQLiteHandler(context);
+    private static class Holder {
+        static final DataBaseSource INSTANCE = new DataBaseSource ();
+    }
+
+    private DataBaseSource(){
+        sqLiteHandler = new SQLiteHandler(ValveLeakageApplication.getContext());
         dataNode1 = new ArrayList<>();
         dataNode2 = new ArrayList<>();
         dataNode3 = new ArrayList<>();
@@ -44,15 +48,16 @@ public class DataBaseSource {
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        Date date = new Date(data.getTimestamp());
-
 //        For conversion of timestamp to date and time
 //        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(new Date(data.getTimestamp())));
 //        AppLog.d("MuzammilQadri", "Current Time: " + new SimpleDateFormat("hh:mm:ss a").format(date));
 
-        contentValues.put("timestamp", data.getTimestamp());
-        contentValues.put("temperature", data.getTemperature());
-        contentValues.put("lpgconcentration", data.getLPGConcentration());
+
+
+        contentValues.put("timestamp", String.valueOf(data.getTimestamp()));
+        contentValues.put("temperature", String.valueOf(data.getTemperature()));
+        contentValues.put("lpgconcentration", String.valueOf(data.getLPGConcentration()));
+
 
         switch (tableNumber){
             case 1:
@@ -71,6 +76,7 @@ public class DataBaseSource {
                 AppLog.e("MuzammilQadri","insertData() called with wrong Table/Node");
         }
         sqLiteDatabase.close();
+
     }
 
     public void removeData(long milliSeconds){
@@ -107,10 +113,21 @@ public class DataBaseSource {
 
     private Data cursorToData(Cursor cursor) {
         Data data =  new Data();
-        data.setTimestamp(cursor.getLong(0));
-        data.setTemperature(cursor.getFloat(1));
-        data.setLPGConcentration(cursor.getFloat(2));
+        data.setTimestamp(Long.valueOf(cursor.getString(1)));
+        data.setTemperature(Float.valueOf(cursor.getString(2)));
+        data.setLPGConcentration(Float.valueOf(cursor.getString(3)));
+
+        Log.d("Muzammil","Timestamp: "+  data.getTimestamp());
+        Log.d("Muzammil","Temperature: "+  data.getTemperature());
+        Log.d("Muzammil","LPG: "+  data.getLPGConcentration());
+
         return data;
     }
 
+    public void populateDataNodeLists() {
+        dataNode1 = getData(SQLiteHandler.getTableNode1());
+        dataNode2 = getData(SQLiteHandler.getTableNode2());
+        dataNode3 = getData(SQLiteHandler.getTableNode3());
+        dataNode4 = getData(SQLiteHandler.getTableNode4());
+    }
 }

@@ -9,9 +9,11 @@ import android.util.Log;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.firebase.FirebaseHandler;
 import com.rubbersoft.android.valveleakage.model.Data;
+import com.rubbersoft.android.valveleakage.ui.MainActivity;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SQLiteHandler;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
@@ -23,15 +25,54 @@ public class CoreLeakageService extends Service {
 
     private IBinder mBinder = new LocalBinder();
     private ServiceCallBacks mserviceCallBacks;     //Use this object to call populateListView method in the activity class..
+    Intent receiverIntent = new Intent(MainActivity.RECEIVER_ACTION);
 
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
     long startingTimeStamp;
+    Query ref;
+    ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Data data = dataSnapshot.getValue(Data.class);
+            dataBaseSource.insertData(data, 1);
+            sharedPreferenceManager.store("timestamp",data.getTimestamp());
+
+            dataBaseSource.populateDataNodeLists();
+
+            sendBroadcast(receiverIntent);
+
+
+            Log.d("FBLOG", data.getTimestamp() + "");
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    };
+
     public CoreLeakageService() {
-        dataBaseSource = DataBaseSource.getInstance(ValveLeakageApplication.getContext());
-        firebaseHandler = FirebaseHandler.getInstance();
-        sharedPreferenceManager = SharedPreferenceManager.getInstance();
+        dataBaseSource = ValveLeakageApplication.getDataBaseSource();
+        firebaseHandler = ValveLeakageApplication.getFirebaseHandler();
+        sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
     }
 
     @Override
@@ -41,9 +82,8 @@ public class CoreLeakageService extends Service {
 
         //Remove data older than a day..
         dataBaseSource.removeData(findTimeToKeepData());
-        //Retrieving existing data
-        populateDataNodeLists();
-        //TODO: Call MainActivity's populateListView() method..
+//        dataBaseSource.populateDataNodeLists();
+//        sendBroadcast(receiverIntent);
         implementFirebaseListeners();
 
 
@@ -53,11 +93,13 @@ public class CoreLeakageService extends Service {
         return START_STICKY;
     }
 
-    private void populateDataNodeLists() {
-        dataBaseSource.dataNode1 = dataBaseSource.getData(SQLiteHandler.getTableNode1());
-        dataBaseSource.dataNode2 = dataBaseSource.getData(SQLiteHandler.getTableNode2());
-        dataBaseSource.dataNode3 = dataBaseSource.getData(SQLiteHandler.getTableNode3());
-        dataBaseSource.dataNode4 = dataBaseSource.getData(SQLiteHandler.getTableNode4());
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("FBLOG", "in onDestroy");
+        ref.removeEventListener(childEventListener);
+
     }
 
     private long findTimeToKeepData() {
@@ -75,43 +117,20 @@ public class CoreLeakageService extends Service {
         Log.d("FBLOG",  "in implementFirebaseListeners");
 
         startingTimeStamp = sharedPreferenceManager.retrieveLong("timestamp");
-        firebaseHandler.getNode1Ref().orderByChild("timestamp").startAt(startingTimeStamp).addChildEventListener(
-                new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        Data data = dataSnapshot.getValue(Data.class);
-                        dataBaseSource.insertData(data,1);
-
-                        Log.d("FBLOG", data.getTimestamp() + "");
-
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
-                    }
-                }
-        );
+        ref = firebaseHandler.getNode1Ref().orderByChild("timestamp").startAt(startingTimeStamp);
+        ref.addChildEventListener(childEventListener);
     }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return false;
     }
 
     public class LocalBinder extends Binder{

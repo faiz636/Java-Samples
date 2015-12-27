@@ -3,19 +3,35 @@ package com.rubbersoft.android.valveleakage.ui;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+>>>>>>> a36f2ed82b6205e06f4cc49da10fa2a571f832b8
 import android.widget.ListView;
 
 import com.rubbersoft.android.valveleakage.R;
+
+
+import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
+import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
 import com.rubbersoft.android.valveleakage.services.CoreLeakageService;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
+import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
-public class MainActivity extends AppCompatActivity implements CoreLeakageService.ServiceCallBacks{
+public class MainActivity extends AppCompatActivity{
 
     final int i = 0;
     ListView listView;
@@ -23,6 +39,17 @@ public class MainActivity extends AppCompatActivity implements CoreLeakageServic
     DataBaseSource dataBaseSource;
     int j;
 //    PendingIntent pendingIntent;
+    SharedPreferenceManager sharedPreferenceManager;
+
+    int i;
+    public static final String RECEIVER_ACTION = "com.rubbersoft.android.valveleakage.ui.MainActivity.MRECEIVER_ACTION";
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("FBLOG", "in onReceive");
+            populateListView();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +74,49 @@ public class MainActivity extends AppCompatActivity implements CoreLeakageServic
     
     public void populateListView() {
         listAdapter = new ListAdapter(getApplicationContext(), R.layout.listview_singleitem, dataBaseSource.dataNode1);
+//        dataBaseSource = ValveLeakageApplication.getDataBaseSource();
+
+        dataBaseSource = ValveLeakageApplication.getDataBaseSource();
+        sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
+
+        //Retrieving existing data if its not the first time
+        if(sharedPreferenceManager.preferences.getString("isFirstTime",null) != null){
+            Log.d("FBLOG", "in onCreate SP - isFirstTime == false");
+            dataBaseSource.populateDataNodeLists();
+            populateListView();
+        }
+        else {
+            Log.d("FBLOG", "in onCreate SP - isFirstTime == true");
+        }
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(MainActivity.RECEIVER_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+        if(sharedPreferenceManager.preferences.getString("isFirstTime",null) == null){
+            Log.d("FBLOG", "in onPause SP - isFirstTime == null");
+            sharedPreferenceManager.store("isFirstTime","false");
+            Log.d("FBLOG", "in onPause SP - isFirstTime is becoming "+ sharedPreferenceManager.preferences.getString("isFirstTime",null));
+
+        }
+    }
+
+    public void populateListView(){
+        Log.d("FBLOG", "in populateListView");
+        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1);
+        Log.d("FBLOG", "in populateListView Checking: "+ dataBaseSource.dataNode1.size()+"");
+
+>>>>>>> a36f2ed82b6205e06f4cc49da10fa2a571f832b8
         listView.setAdapter(listAdapter);
 
 

@@ -9,14 +9,17 @@ import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
  * Created by Muhammad Faizan Khan on 26/12/15.
  */
 public class SharedPreferenceManager {
-    SharedPreferences.Editor editorpreferences;
-    SharedPreferences preferences;
-    static SharedPreferenceManager manager;
+    public SharedPreferences.Editor editorpreferences;
+    public SharedPreferences preferences;
+    private static SharedPreferenceManager manager;
 
-    public static SharedPreferenceManager getInstance() {
-        if (manager == null)
-            manager = new SharedPreferenceManager();
-        return manager;
+
+    public static synchronized SharedPreferenceManager getInstance(){
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        static final SharedPreferenceManager INSTANCE = new SharedPreferenceManager ();
     }
 
     private SharedPreferenceManager(){
@@ -27,7 +30,6 @@ public class SharedPreferenceManager {
 
     private void checkIfFirstTime() {
         if(preferences.getString("isFirstTime",null) == null){
-            editorpreferences.putString("isFirstTime","false");
             editorpreferences.putLong("timestamp",0);
         }
     }

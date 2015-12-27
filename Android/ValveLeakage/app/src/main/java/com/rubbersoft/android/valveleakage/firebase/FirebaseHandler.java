@@ -18,8 +18,12 @@ public class FirebaseHandler {
         initChildRefs();
     }
 
-    public static FirebaseHandler getInstance() {
-        return OUR_INSTANCE == null ? (OUR_INSTANCE = new FirebaseHandler()) : OUR_INSTANCE;
+    public static synchronized FirebaseHandler getInstance(){
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        static final FirebaseHandler INSTANCE = new FirebaseHandler ();
     }
 
     private void initChildRefs(){

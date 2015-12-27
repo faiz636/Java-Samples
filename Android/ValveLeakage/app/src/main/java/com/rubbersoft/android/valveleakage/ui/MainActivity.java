@@ -15,7 +15,7 @@ import com.rubbersoft.android.valveleakage.model.ListAdapter;
 import com.rubbersoft.android.valveleakage.services.CoreLeakageService;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CoreLeakageService.ServiceCallBacks{
 
     final int i = 0;
     ListView listView;
@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listview);
         dataBaseSource = DataBaseSource.getInstance(getApplicationContext());
-        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
-        startService(intent);
+//        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
+//       startService(intent);
 /*
         pendingIntent = PendingIntent.getActivity(MainActivity.this, 1,
                 new Intent(MainActivity.this, MainActivity.class), 0);
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         });
 */
     }
-
+    
     public void populateListView() {
         listAdapter = new ListAdapter(getApplicationContext(), R.layout.listview_singleitem, dataBaseSource.dataNode1);
         listView.setAdapter(listAdapter);

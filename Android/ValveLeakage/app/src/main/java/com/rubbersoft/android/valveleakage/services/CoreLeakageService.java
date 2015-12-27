@@ -2,12 +2,16 @@ package com.rubbersoft.android.valveleakage.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
+import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.firebase.FirebaseHandler;
+import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SQLiteHandler;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
@@ -17,12 +21,15 @@ import java.util.Date;
 
 public class CoreLeakageService extends Service {
 
+    private IBinder mBinder = new LocalBinder();
+    private ServiceCallBacks mserviceCallBacks;     //Use this object to call populateListView method in the activity class..
+
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
     long startingTimeStamp;
     public CoreLeakageService() {
-        dataBaseSource = DataBaseSource.getInstance(getApplicationContext());
+        dataBaseSource = DataBaseSource.getInstance(ValveLeakageApplication.getContext());
         firebaseHandler = FirebaseHandler.getInstance();
         sharedPreferenceManager = SharedPreferenceManager.getInstance();
     }
@@ -30,12 +37,15 @@ public class CoreLeakageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.d("FBLOG",  "in onStartCommand");
+
         //Remove data older than a day..
         dataBaseSource.removeData(findTimeToKeepData());
         //Retrieving existing data
         populateDataNodeLists();
         //TODO: Call MainActivity's populateListView() method..
         implementFirebaseListeners();
+
 
         //TODO: Implement firebase listeners correctly
         //TODO: Add the remaining functionalities
@@ -62,11 +72,17 @@ public class CoreLeakageService extends Service {
     }
 
     private void implementFirebaseListeners() {
+        Log.d("FBLOG",  "in implementFirebaseListeners");
+
         startingTimeStamp = sharedPreferenceManager.retrieveLong("timestamp");
         firebaseHandler.getNode1Ref().orderByChild("timestamp").startAt(startingTimeStamp).addChildEventListener(
                 new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Data data = dataSnapshot.getValue(Data.class);
+                        dataBaseSource.insertData(data,1);
+
+                        Log.d("FBLOG", data.getTimestamp() + "");
 
                     }
 
@@ -95,7 +111,20 @@ public class CoreLeakageService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
+    }
+
+    public class LocalBinder extends Binder{
+        CoreLeakageService getService(){
+            return CoreLeakageService.this;
+        }
+    }
+
+    public static interface ServiceCallBacks {
+        public void populateListView();
+    }
+
+    public void setCallBacksForService(ServiceCallBacks serviceCallBacks){
+        this.mserviceCallBacks = serviceCallBacks;
     }
 }

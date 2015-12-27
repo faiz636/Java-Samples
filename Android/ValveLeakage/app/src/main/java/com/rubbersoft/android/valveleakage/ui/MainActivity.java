@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ListAdapter listAdapter;
     DataBaseSource dataBaseSource;
+    int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

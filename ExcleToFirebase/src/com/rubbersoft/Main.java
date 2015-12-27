@@ -17,8 +17,12 @@ public class Main {
             Executors.newScheduledThreadPool(10);
 
     public static void main(String[] args) {
-//        scheduleTask();
-        scheduleDummyTask();
+        if (args.length>0 && args[0].compareTo("dummy")==0){
+            System.out.println("will run dummy task");
+            scheduleDummyTask();
+        }else {
+            scheduleTask();
+        }
         exitProcedure();
     }
 

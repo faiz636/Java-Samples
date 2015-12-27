@@ -11,11 +11,14 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     private static final int INITIAL_DELAY = 0, PERIOD = 1;
+    private static final int INITIAL_DELAY_DUMMY = 0, PERIOD_DUMMY = 10;
+    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES, TIME_UNIT_DUMMY = TimeUnit.SECONDS;
     private static final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(5);
+            Executors.newScheduledThreadPool(10);
 
     public static void main(String[] args) {
-        scheduleTask();
+//        scheduleTask();
+        scheduleDummyTask();
         exitProcedure();
     }
 
@@ -28,7 +31,12 @@ public class Main {
                 fileReaderTask();
             }
         };
-        scheduler.scheduleAtFixedRate(task, Main.INITIAL_DELAY, Main.PERIOD, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(task, Main.INITIAL_DELAY, Main.PERIOD, TIME_UNIT);
+    }
+
+    //    schedule task for running periodically
+    private static void scheduleDummyTask() {
+        scheduler.scheduleAtFixedRate(new FirebaseDummyDataSender(), Main.INITIAL_DELAY_DUMMY, Main.PERIOD_DUMMY, TIME_UNIT_DUMMY);
     }
 
     //    take exit command and start exit procedure

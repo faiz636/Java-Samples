@@ -14,6 +14,7 @@ public class ExcelToJava {
 
     private static Map<Integer,Integer> START_POINT = new HashMap<Integer, Integer>();
     private static final String EXCEL_POIINTER_FILE_PATH = "excel_pointers";
+    private static int i;
 
     /**
      * Returns the data of Excel file as an object.
@@ -27,7 +28,7 @@ public class ExcelToJava {
         try {
             ArrayList<SheetData> sheetDataList = new ArrayList<SheetData>();
             Workbook workbook = Workbook.getWorkbook(new File(path));
-            System.out.println("reading excle file");
+            printMessage("reading excle file");
 
             for (int sheetNo = 0;sheetNo<4;sheetNo++) {
 
@@ -37,7 +38,7 @@ public class ExcelToJava {
 
                 int size = sheet.getRows();
                 boolean invalidData;
-                System.out.println("reading sheet " + sheetNo+ "  and size : "+ size);
+                printMessage("reading sheet " + sheetNo + "  and size : " + size);
 
                 for (int i = START_POINT.get(sheetNo); i < size; i++) {
                     SheetRow sheetRow = new SheetRow();
@@ -45,13 +46,13 @@ public class ExcelToJava {
                     for (int j = 0; j <= 7; j++) {
                     /*
                     This will print each cell before adding it into the column..
-                    if(j==0) System.out.println();
+                    if(j==0) printMessage();
                     System.out.print(sheet.getCell(j,i).getContents() + "   ");
                     */
                         String s = sheet.getCell(j, i).getContents();
                         if (s.length() == 0) {
                             invalidData = true;
-                            System.out.println("row " + i + " is invalid");
+                            printMessage("row " + i + " is invalid");
                             break;
                         }
 
@@ -64,6 +65,7 @@ public class ExcelToJava {
             }
             workbook.close();
             writeExcelPointers();
+            i++;
             return sheetDataList;
 
         } catch (IOException e) {
@@ -72,6 +74,7 @@ public class ExcelToJava {
             e.printStackTrace();
         }
 
+        i++;
         return null;
     }
 
@@ -91,11 +94,11 @@ public class ExcelToJava {
                     ExcelToJava.START_POINT.put(i,1);
             }
         }
-        System.out.println(START_POINT);
+        printMessage(START_POINT);
     }
 
     private static void writeExcelPointers(){
-        System.out.println("writeExcelPointers"+START_POINT);
+        printMessage("writeExcelPointers" + START_POINT);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(ExcelToJava.EXCEL_POIINTER_FILE_PATH));
             for (int i=0;i<4;i++){
@@ -106,6 +109,14 @@ public class ExcelToJava {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void printMessage(Object o){
+        printMessage(o.toString());
+    }
+
+    private static void printMessage(String message){
+        System.out.println("FileReadingTask-" + i + "--" + message);
     }
 
 }

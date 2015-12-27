@@ -24,6 +24,8 @@ public class FirebaseDataSender {
     private static Firebase mRootRef;
     private static AuthData mUserAuth;
     private ArrayList<SheetData> sheetDataList;
+    private String threadName;
+    private static int runCounter;
 
     static {
         mRootRef = new Firebase(FIREBASE_URL);
@@ -36,6 +38,7 @@ public class FirebaseDataSender {
     }
 
     public void run() {
+        threadName = "FirebaseDataSender-"+runCounter++;
         checkForInterNetConnection();
         if (mUserAuth==null){
             loginUser("a@b.com", "123");
@@ -48,14 +51,14 @@ public class FirebaseDataSender {
      */
     private void checkForInterNetConnection() {//check for internet connection(connection with google server :)
         while (!netIsAvailable()) {
-            System.out.println("Internet Connection Not Available, Retrying In 5 sec...");
+            printMessage("Internet Connection Not Available, Retrying In 5 sec...");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Internet Available, proceeding...");
+        printMessage("Internet Available, proceeding...");
     }
 
 
@@ -70,7 +73,7 @@ public class FirebaseDataSender {
         mRootRef.createUser(email, pass, new Firebase.ValueResultHandler<Map<String, Object>>() {
             @Override
             public void onSuccess(Map<String, Object> result) {
-                System.out.println("Successfully created user account with uid: " + result.get("uid"));
+                printMessage("Successfully created user account with uid: " + result.get("uid"));
                 mWait = false;
             }
 
@@ -82,7 +85,7 @@ public class FirebaseDataSender {
             }
         });
         //wait for user creation
-        waitToCompleteOperation();
+        waitToCompleteOperation("waiting create user");
     }
 
     /**
@@ -94,11 +97,11 @@ public class FirebaseDataSender {
     public synchronized void loginUser(String email, String pass) {
         if(mUserAuth!=null) return;
         mWait = true;
-        System.out.println("logging in user");
+        printMessage("logging in user");
         mRootRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                printMessage("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
                 FirebaseDataSender.mUserAuth = authData;
                 mWait = false;
             }
@@ -110,8 +113,8 @@ public class FirebaseDataSender {
                 mWait = false;
             }
         });
-        waitToCompleteOperation();//this time wait for login
-        System.out.println("user logged in");
+        waitToCompleteOperation("waiting for user to login");//this time wait for login
+        printMessage("user logged in");
     }
 
     /**
@@ -145,14 +148,14 @@ public class FirebaseDataSender {
         final int[] wait = {0};
         for (int i = 0; i < 4; i++) {
             ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
-            System.out.println("sending node " + (i + 1) + " data, size : " + list.size());
+            printMessage("sending node " + (i + 1) + " data, size : " + list.size());
             for (SheetRow item : list) {
                 wait[0]++;
                 mRootRef.child("node" + (i + 1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                         if (firebaseError == null) {
-                            System.out.println("row sent");
+                            printMessage("row sent");
                         } else {
                             processErrorCode(firebaseError);
                         }
@@ -160,14 +163,11 @@ public class FirebaseDataSender {
                     }
                 });
             }
-            System.out.println("All rows sent");
+            printMessage("All rows sent");
         }
-        System.out.println("pushing data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
         mWait = wait[0] > 0;
-        t = System.currentTimeMillis();
-        waitToCompleteOperation();
-        System.out.println("waiit time for sending data total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
-        System.out.println("All nodes data sent");
+        waitToCompleteOperation("data sent waiting for acknowledgement");
+        printMessage("All nodes data sent");
     }
 
     /**
@@ -175,20 +175,24 @@ public class FirebaseDataSender {
      * when calling operation is completed
      * wait flag would be set to false
      */
-    public void waitToCompleteOperation() {
+    public void waitToCompleteOperation(String s) {
         int i = 0;
         while (mWait) {
             try {
-                System.out.println("waiting" + i++);
-                Thread.sleep(100);
+                printMessage(s + "--" + i++);
+                Thread.sleep(500);
                 if (!netIsAvailable()) {
-                    System.out.println("Connection Lost");
+                    printMessage("Connection Lost");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("waiting end");
+        printMessage("waiting end");
+    }
+
+    private void printMessage(String message){
+        System.out.println(threadName + "--" + message);
     }
 
     /**
@@ -198,43 +202,43 @@ public class FirebaseDataSender {
         if (firebaseError == null) {
             return;
         }
-        System.out.println("processing error code:" + firebaseError);
+        printMessage("processing error code:" + firebaseError);
         switch (firebaseError.getCode()) {
             case FirebaseError.AUTHENTICATION_PROVIDER_DISABLED:
-                System.out.println("AUTHENTICATION_PROVIDER_DISABLED");
+                printMessage("AUTHENTICATION_PROVIDER_DISABLED");
                 break;
             case FirebaseError.DISCONNECTED:
-                System.out.println("DISCONNECTED");
+                printMessage("DISCONNECTED");
                 break;
             case FirebaseError.DENIED_BY_USER:
-                System.out.println("DENIED_BY_USER");
+                printMessage("DENIED_BY_USER");
                 break;
             case FirebaseError.EMAIL_TAKEN:
-                System.out.println("EMAIL_TAKEN");
+                printMessage("EMAIL_TAKEN");
                 break;
             case FirebaseError.INVALID_AUTH_ARGUMENTS:
-                System.out.println("INVALID_AUTH_ARGUMENTS");
+                printMessage("INVALID_AUTH_ARGUMENTS");
                 break;
             case FirebaseError.INVALID_EMAIL:
-                System.out.println("INVALID_EMAIL");
+                printMessage("INVALID_EMAIL");
                 break;
             case FirebaseError.EXPIRED_TOKEN:
-                System.out.println("EXPIRED_TOKEN");
+                printMessage("EXPIRED_TOKEN");
                 break;
             case FirebaseError.PERMISSION_DENIED:
-                System.out.println("PERMISSION_DENIED");
+                printMessage("PERMISSION_DENIED");
                 break;
             case FirebaseError.INVALID_PASSWORD:
-                System.out.println("INVALID_PASSWORD");
+                printMessage("INVALID_PASSWORD");
                 break;
             case FirebaseError.INVALID_CREDENTIALS:
-                System.out.println("INVALID_CREDENTIALS");
+                printMessage("INVALID_CREDENTIALS");
                 break;
             case FirebaseError.INVALID_CONFIGURATION:
-                System.out.println("INVALID_CONFIGURATION");
+                printMessage("INVALID_CONFIGURATION");
                 break;
             case FirebaseError.NETWORK_ERROR:
-                System.out.println("NETWORK_ERROR");
+                printMessage("NETWORK_ERROR");
                 break;
         }
 

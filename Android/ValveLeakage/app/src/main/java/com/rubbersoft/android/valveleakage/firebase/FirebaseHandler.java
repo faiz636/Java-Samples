@@ -31,6 +31,14 @@ public class FirebaseHandler {
         node2 = firebaseRef.child("node2");
         node3 = firebaseRef.child("node3");
         node4 = firebaseRef.child("node4");
+        setSync();
+    }
+
+    private void setSync(){
+        node1.keepSynced(true);
+        node2.keepSynced(true);
+        node3.keepSynced(true);
+        node4.keepSynced(true);
     }
 
     public Firebase getRootRef() {

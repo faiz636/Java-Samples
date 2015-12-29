@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
->>>>>>> a36f2ed82b6205e06f4cc49da10fa2a571f832b8
 import android.widget.ListView;
 
 import com.rubbersoft.android.valveleakage.R;
@@ -33,16 +32,16 @@ import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
 public class MainActivity extends AppCompatActivity{
 
-    final int i = 0;
     ListView listView;
     ListAdapter listAdapter;
     DataBaseSource dataBaseSource;
-    int j;
-//    PendingIntent pendingIntent;
     SharedPreferenceManager sharedPreferenceManager;
 
+    int j;
+//    PendingIntent pendingIntent;
+
     int i;
-    public static final String RECEIVER_ACTION = "com.rubbersoft.android.valveleakage.ui.MainActivity.MRECEIVER_ACTION";
+    public static final String RECEIVER_ACTION = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION";
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -56,26 +55,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listview);
-        dataBaseSource = DataBaseSource.getInstance(getApplicationContext());
-//        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
-//       startService(intent);
-/*
-        pendingIntent = PendingIntent.getActivity(MainActivity.this, 1,
-                new Intent(MainActivity.this, MainActivity.class), 0);
-        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "generating notification" + i, Toast.LENGTH_SHORT).show();
-                generateNotification("", pendingIntent);
-            }
-        });
-*/
-    }
-    
-    public void populateListView() {
-        listAdapter = new ListAdapter(getApplicationContext(), R.layout.listview_singleitem, dataBaseSource.dataNode1);
-//        dataBaseSource = ValveLeakageApplication.getDataBaseSource();
-
         dataBaseSource = ValveLeakageApplication.getDataBaseSource();
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
 
@@ -88,8 +67,18 @@ public class MainActivity extends AppCompatActivity{
         else {
             Log.d("FBLOG", "in onCreate SP - isFirstTime == true");
         }
-
-
+//        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
+//       startService(intent);
+//
+//        pendingIntent = PendingIntent.getActivity(MainActivity.this, 1,
+//                new Intent(MainActivity.this, MainActivity.class), 0);
+//        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(MainActivity.this, "generating notification" + i, Toast.LENGTH_SHORT).show();
+//                generateNotification("", pendingIntent);
+//            }
+//        });
 
     }
 
@@ -116,7 +105,6 @@ public class MainActivity extends AppCompatActivity{
         listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1);
         Log.d("FBLOG", "in populateListView Checking: "+ dataBaseSource.dataNode1.size()+"");
 
->>>>>>> a36f2ed82b6205e06f4cc49da10fa2a571f832b8
         listView.setAdapter(listAdapter);
 
 

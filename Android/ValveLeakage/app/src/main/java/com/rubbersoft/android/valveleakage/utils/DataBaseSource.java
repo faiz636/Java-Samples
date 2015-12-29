@@ -1,7 +1,6 @@
 package com.rubbersoft.android.valveleakage.utils;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -9,12 +8,7 @@ import android.util.Log;
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.model.Data;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -44,22 +38,20 @@ public class DataBaseSource {
         dataNode4 = new ArrayList<>();
     }
 
-    public void insertData(Data data, String TableName){
+    public void insertData(Data data, String tableName){
+
+        //If timestamp already exists dont insert..
+        if(checkIsDataAlreadyInDBorNot(tableName, "timestamp", String.valueOf(data.getTimestamp()))) return;
+
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-
-//        For conversion of timestamp to date and time
-//        AppLog.d("MuzammilQadri","Current Date: " + new SimpleDateFormat("yyyy.MM.dd").format(new Date(data.getTimestamp())));
-//        AppLog.d("MuzammilQadri", "Current Time: " + new SimpleDateFormat("hh:mm:ss a").format(date));
-
-
 
         contentValues.put("timestamp", String.valueOf(data.getTimestamp()));
         contentValues.put("temperature", String.valueOf(data.getTemperature()));
         contentValues.put("lpgconcentration", String.valueOf(data.getLPGConcentration()));
 
 
-        switch (TableName){
+        switch (tableName){
             case "node1":
                 sqLiteDatabase.insert(SQLiteHandler.getTableNode1(), null, contentValues);
                 break;
@@ -132,7 +124,7 @@ public class DataBaseSource {
     }
 
 
-    public boolean CheckIsDataAlreadyInDBorNot(String TableName, String dbfield, String fieldValue) {
+    public boolean checkIsDataAlreadyInDBorNot(String TableName, String dbfield, String fieldValue) {
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getReadableDatabase();
         String Query = "Select * from " + TableName + " where " + dbfield + " = " + fieldValue;
         Cursor cursor = sqLiteDatabase.rawQuery(Query, null);

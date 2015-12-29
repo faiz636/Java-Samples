@@ -37,7 +37,7 @@ public class CoreLeakageService extends Service {
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Data data = dataSnapshot.getValue(Data.class);
             dataBaseSource.insertData(data, 1);
-            sharedPreferenceManager.store("timestamp",data.getTimestamp());
+//            sharedPreferenceManager.store("timestamp",data.getTimestamp());
 
             dataBaseSource.populateDataNodeLists();
 
@@ -116,8 +116,8 @@ public class CoreLeakageService extends Service {
     private void implementFirebaseListeners() {
         Log.d("FBLOG",  "in implementFirebaseListeners");
 
-        startingTimeStamp = sharedPreferenceManager.retrieveLong("timestamp");
-        ref = firebaseHandler.getNode1Ref().orderByChild("timestamp").startAt(startingTimeStamp);
+//        startingTimeStamp = sharedPreferenceManager.retrieveLong("timestamp");
+        ref = firebaseHandler.getNode1Ref().orderByChild("timestamp");
         ref.addChildEventListener(childEventListener);
     }
 

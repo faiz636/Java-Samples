@@ -1,14 +1,11 @@
 package com.rubbersoft.android.valveleakage.model;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rubbersoft.android.valveleakage.R;
@@ -45,7 +42,7 @@ public class ListAdapter extends BaseAdapter {
      */
     @Override
     public Object getItem(int position) {
-        return data.get(position);
+        return data.get(data.size()-position-1);
     }
 
     /**

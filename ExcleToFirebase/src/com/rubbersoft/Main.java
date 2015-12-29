@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static final int INITIAL_DELAY = 0, PERIOD = 1;
+    private static int INITIAL_DELAY = 0, PERIOD = 1;
     private static final int INITIAL_DELAY_DUMMY = 0, PERIOD_DUMMY = 10;
-    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES, TIME_UNIT_DUMMY = TimeUnit.SECONDS;
+    private static TimeUnit TIME_UNIT = TimeUnit.MINUTES, TIME_UNIT_DUMMY = TimeUnit.SECONDS;
     private static final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(10);
 
@@ -21,6 +21,21 @@ public class Main {
             System.out.println("will run dummy task");
             scheduleDummyTask();
         }else {
+            if (args.length>0) {
+                if (args.length > 0 && args[0].compareTo("min") == 0) {
+                    TIME_UNIT = TimeUnit.MINUTES;
+                } else if (args.length > 0 && args[0].compareTo("sec") == 0) {
+                    TIME_UNIT = TimeUnit.SECONDS;
+                }
+                try {
+                    INITIAL_DELAY = Integer.parseInt(args[1]);
+                    PERIOD = Integer.parseInt(args[2]);
+                }catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("invalid Arguments");
+                    e.printStackTrace();
+                }
+
+            }
             scheduleTask();
         }
         exitProcedure();

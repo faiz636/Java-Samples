@@ -41,7 +41,10 @@ public class DataBaseSource {
     public void insertData(Data data, String tableName){
 
         //If timestamp already exists dont insert..
-        if(checkIsDataAlreadyInDBorNot(tableName, "timestamp", String.valueOf(data.getTimestamp()))) return;
+        if(checkIsDataAlreadyInDBorNot(tableName, "timestamp", String.valueOf(data.getTimestamp()))) {
+            Log.d("FBLOG", "in insertData, Data Exists: " + String.valueOf(data.getTimestamp()));
+            return;
+        }
 
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
         ContentValues contentValues = new ContentValues();

@@ -3,6 +3,7 @@ package com.rubbersoft.android.valveleakage.utils;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Faiz on 26/12/2015.
@@ -48,6 +49,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d("FBLOG", "in SQLiteHandler onCreate ");
+
         createTableQuery(db,SQLiteHandler.TABLE_NODE1);
         createTableQuery(db,SQLiteHandler.TABLE_NODE2);
         createTableQuery(db,SQLiteHandler.TABLE_NODE3);
@@ -77,6 +80,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d("FBLOG", "in SQLiteHandler onUpgrade ");
+
 ////        drop all four tables
 //        dropTable(db,SQLiteHandler.TABLE_NODE1);
 //        dropTable(db,SQLiteHandler.TABLE_NODE2);

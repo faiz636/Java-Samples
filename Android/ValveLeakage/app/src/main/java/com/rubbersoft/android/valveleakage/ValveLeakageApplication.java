@@ -31,6 +31,7 @@ public class ValveLeakageApplication extends Application {
         context = this;
 
         Firebase.setAndroidContext(this);
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
 
         initializeSingletons();
 

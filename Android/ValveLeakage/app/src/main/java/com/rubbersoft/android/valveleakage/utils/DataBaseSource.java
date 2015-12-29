@@ -44,7 +44,7 @@ public class DataBaseSource {
         dataNode4 = new ArrayList<>();
     }
 
-    public void insertData(Data data, int tableNumber){
+    public void insertData(Data data, String TableName){
         SQLiteDatabase sqLiteDatabase = sqLiteHandler.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -59,17 +59,17 @@ public class DataBaseSource {
         contentValues.put("lpgconcentration", String.valueOf(data.getLPGConcentration()));
 
 
-        switch (tableNumber){
-            case 1:
+        switch (TableName){
+            case "node1":
                 sqLiteDatabase.insert(SQLiteHandler.getTableNode1(), null, contentValues);
                 break;
-            case 2:
+            case "node2":
                 sqLiteDatabase.insert(SQLiteHandler.getTableNode2(), null, contentValues);
                 break;
-            case 3:
+            case "node3":
                 sqLiteDatabase.insert(SQLiteHandler.getTableNode3(), null, contentValues);
                 break;
-            case 4:
+            case "node4":
                 sqLiteDatabase.insert(SQLiteHandler.getTableNode4(), null, contentValues);
                 break;
             default:
@@ -129,5 +129,18 @@ public class DataBaseSource {
         dataNode2 = getData(SQLiteHandler.getTableNode2());
         dataNode3 = getData(SQLiteHandler.getTableNode3());
         dataNode4 = getData(SQLiteHandler.getTableNode4());
+    }
+
+
+    public boolean CheckIsDataAlreadyInDBorNot(String TableName, String dbfield, String fieldValue) {
+        SQLiteDatabase sqLiteDatabase = sqLiteHandler.getReadableDatabase();
+        String Query = "Select * from " + TableName + " where " + dbfield + " = " + fieldValue;
+        Cursor cursor = sqLiteDatabase.rawQuery(Query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 }

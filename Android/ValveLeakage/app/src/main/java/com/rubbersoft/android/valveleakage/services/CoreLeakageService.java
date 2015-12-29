@@ -36,7 +36,7 @@ public class CoreLeakageService extends Service {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Data data = dataSnapshot.getValue(Data.class);
-            dataBaseSource.insertData(data, 1);
+            dataBaseSource.insertData(data, "node1");
 //            sharedPreferenceManager.store("timestamp",data.getTimestamp());
 
             dataBaseSource.populateDataNodeLists();

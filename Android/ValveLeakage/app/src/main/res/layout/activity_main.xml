@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:layout_height="match_parent" tools:context=".MainActivity">
 
 <!--
 button that will generate notification for testing
@@ -26,12 +25,17 @@ button that will generate notification for testing
 
     <TextView
         android:id="@+id/textview1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Valve Leakage"
-        android:textSize="20sp"
+        android:gravity="center"
+        android:text="Node 1"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
         android:layout_alignParentTop="true"
+        style="@android:style/ButtonBar"
         />
     <ListView
         android:id="@+id/listview"
@@ -39,7 +43,11 @@ button that will generate notification for testing
         android:layout_height="match_parent"
         android:layout_below="@+id/textview1"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/listview_itemdesign"/>
+        android:background="@drawable/listview_itemdesign"
+        android:divider="@drawable/custom_divider"
+        android:dividerHeight="0.1dp"
+
+        />
 
 
 </RelativeLayout>

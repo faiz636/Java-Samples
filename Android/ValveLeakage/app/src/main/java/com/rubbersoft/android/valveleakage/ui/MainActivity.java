@@ -12,6 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.IntentFilter;
 import android.util.Log;
+import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.rubbersoft.android.valveleakage.R;
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity{
         dataBaseSource = ValveLeakageApplication.getDataBaseSource();
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
 
-        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1);
+        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1, listView);
         listView.setAdapter(listAdapter);
+
 
 //        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
 //       startService(intent);

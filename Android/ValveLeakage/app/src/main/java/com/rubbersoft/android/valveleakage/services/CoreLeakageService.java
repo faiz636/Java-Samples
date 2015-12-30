@@ -38,6 +38,9 @@ public class CoreLeakageService extends Service {
             Data data = dataSnapshot.getValue(Data.class);
             dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE1);
             sendBroadcast(receiverIntent);
+
+//            TODO: Call your notification genenartor method here
+
             Log.d("FBLOG", data.getTimestamp() + "");
         }
 
@@ -74,8 +77,6 @@ public class CoreLeakageService extends Service {
         Log.d("FBLOG",  "in onStartCommand");
 
         implementFirebaseListeners();
-
-        //TODO: Add the remaining functionalities
 
         return START_STICKY;
     }

@@ -57,7 +57,10 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/textview_time"
             android:id="@+id/textview_lpgvalue"
-            android:text="12345" />
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:text="12345"
+                />
 
 
 

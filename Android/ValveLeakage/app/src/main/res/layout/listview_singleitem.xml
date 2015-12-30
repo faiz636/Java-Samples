@@ -6,7 +6,6 @@
     android:paddingRight="30dp"
     android:paddingTop="15dp"
     android:paddingBottom="15dp"
-    android:background="@drawable/listview_itemdesign"
     >
 
         <TextView
@@ -14,6 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:id="@+id/textview_date"
+            android:textStyle="bold"
             android:text="26/12/15"
             android:layout_marginBottom="4dp"
             />
@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:id="@+id/textview_time"
+            android:textStyle="bold"
             android:text="7:13:00"
             android:layout_marginBottom="4dp"/>
 
@@ -56,7 +57,7 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/textview_time"
             android:id="@+id/textview_lpgvalue"
-            android:text="12345"/>
+            android:text="12345" />
 
 
 

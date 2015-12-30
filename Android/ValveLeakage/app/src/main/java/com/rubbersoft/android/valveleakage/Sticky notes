@@ -3,5 +3,3 @@ Re-installing the app doesn't cause the SharedPrefrences or SQLite to reinitiali
 Firebase rules aint restricting from reading the data older than a day..
 
 Data is beign fetched and stored correctly just for the first node, others node should have to be implemented..
-
-ListView single item design isn't looking well..

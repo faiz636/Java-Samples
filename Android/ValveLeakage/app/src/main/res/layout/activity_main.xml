@@ -40,7 +40,8 @@ button that will generate notification for testing
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textview1"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/listview_itemdesign"/>
 
 
 </RelativeLayout>

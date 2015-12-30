@@ -1,6 +1,7 @@
 package com.rubbersoft.android.valveleakage.model;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class ListAdapter extends BaseAdapter {
     LayoutInflater mInflater;
     List<Data> data;
     Context context;
+
     public ListAdapter(Context context, List<Data> data) {
         this.data = data;
         this.context = context;
@@ -66,10 +68,12 @@ public class ListAdapter extends BaseAdapter {
         if (v == null) {
             v = mInflater.inflate(R.layout.listview_singleitem, null,false);
             ViewHolder viewHolder = new ViewHolder();
+
             viewHolder.tv1 = (TextView) v.findViewById(R.id.textview_date);
             viewHolder.tv2 = (TextView) v.findViewById(R.id.textview_time);
             viewHolder.tv3 = (TextView) v.findViewById(R.id.textview_tempvalue);
             viewHolder.tv4 = (TextView) v.findViewById(R.id.textview_lpgvalue);
+
             v.setTag(viewHolder);
         }
 
@@ -79,6 +83,10 @@ public class ListAdapter extends BaseAdapter {
         viewHolder.tv2.setText(new SimpleDateFormat("hh:mm:ss a").format(new Date(data.get(position).getTimestamp())));
         viewHolder.tv3.setText(String.valueOf(data.get(position).getTemperature()));
         viewHolder.tv4.setText(String.valueOf(data.get(position).getLPGConcentration()));
+
+        if(Float.valueOf(data.get(position).getLPGConcentration()) > 200 ){
+            viewHolder.tv4.setTextColor(Color.parseColor("red"));
+        }
 
         return v;
 

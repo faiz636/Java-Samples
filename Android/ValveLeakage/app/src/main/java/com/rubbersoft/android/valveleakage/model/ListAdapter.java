@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -23,6 +25,8 @@ public class ListAdapter extends BaseAdapter {
     LayoutInflater mInflater;
     List<Data> data;
     Context context;
+    boolean mVwasNull = false;
+
 
     public ListAdapter(Context context, List<Data> data) {
         this.data = data;
@@ -75,6 +79,11 @@ public class ListAdapter extends BaseAdapter {
             viewHolder.tv4 = (TextView) v.findViewById(R.id.textview_lpgvalue);
 
             v.setTag(viewHolder);
+
+
+            Log.d("LA", "in mFirstTime == true");
+
+            mVwasNull =true;
         }
 
         ViewHolder viewHolder = (ViewHolder) v.getTag();
@@ -88,6 +97,18 @@ public class ListAdapter extends BaseAdapter {
             viewHolder.tv4.setTextColor(Color.parseColor("red"));
         else
             viewHolder.tv4.setTextColor(Color.parseColor("black"));
+
+        if(!mVwasNull) {
+            Log.d("LA", "in mFirstTime == false");
+            Animation animationY = new TranslateAnimation(parent.getWidth()/4, 0,0, 0);
+            animationY.setDuration(300);
+            v.startAnimation(animationY);
+        }
+        mVwasNull =false;
+
+
+
+
 
         return v;
 

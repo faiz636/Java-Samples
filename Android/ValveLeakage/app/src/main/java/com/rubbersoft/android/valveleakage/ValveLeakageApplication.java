@@ -42,7 +42,7 @@ public class ValveLeakageApplication extends Application {
     private void initializeSingletons() {
         dataBaseSource = DataBaseSource.getInstance();
         firebaseHandler = FirebaseHandler.getInstance();
-        sharedPreferenceManager = SharedPreferenceManager.getInstance();
+//        sharedPreferenceManager = SharedPreferenceManager.getInstance();
     }
 
     public static Context getContext() {

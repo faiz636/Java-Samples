@@ -14,8 +14,8 @@ import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.firebase.FirebaseHandler;
 import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.ui.MainActivity;
+import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
-import com.rubbersoft.android.valveleakage.utils.SQLiteHandler;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
 import java.util.Calendar;
@@ -36,16 +36,9 @@ public class CoreLeakageService extends Service {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Data data = dataSnapshot.getValue(Data.class);
-            dataBaseSource.insertData(data, "node1");
-//            sharedPreferenceManager.store("timestamp",data.getTimestamp());
-
-            dataBaseSource.populateDataNodeLists();
-
+            dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE1);
             sendBroadcast(receiverIntent);
-
-
             Log.d("FBLOG", data.getTimestamp() + "");
-
         }
 
         @Override
@@ -80,14 +73,8 @@ public class CoreLeakageService extends Service {
 
         Log.d("FBLOG",  "in onStartCommand");
 
-        //Remove data older than a day..
-        dataBaseSource.removeData(findTimeToKeepData());
-//        dataBaseSource.populateDataNodeLists();
-//        sendBroadcast(receiverIntent);
         implementFirebaseListeners();
 
-
-        //TODO: Implement firebase listeners correctly
         //TODO: Add the remaining functionalities
 
         return START_STICKY;
@@ -115,8 +102,6 @@ public class CoreLeakageService extends Service {
 
     private void implementFirebaseListeners() {
         Log.d("FBLOG",  "in implementFirebaseListeners");
-
-//        startingTimeStamp = sharedPreferenceManager.retrieveLong("timestamp");
         ref = firebaseHandler.getNode1Ref().orderByChild("timestamp");
         ref.addChildEventListener(childEventListener);
     }

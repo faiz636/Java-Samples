@@ -11,22 +11,14 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.rubbersoft.android.valveleakage.R;
 
 
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
-import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
-import com.rubbersoft.android.valveleakage.services.CoreLeakageService;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
@@ -36,7 +28,6 @@ public class MainActivity extends AppCompatActivity{
     ListAdapter listAdapter;
     DataBaseSource dataBaseSource;
     SharedPreferenceManager sharedPreferenceManager;
-
     int j;
 //    PendingIntent pendingIntent;
 
@@ -46,7 +37,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("FBLOG", "in onReceive");
-            populateListView();
+            notifyDataChanged();
         }
     };
 
@@ -58,15 +49,9 @@ public class MainActivity extends AppCompatActivity{
         dataBaseSource = ValveLeakageApplication.getDataBaseSource();
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
 
-        //Retrieving existing data if its not the first time
-        if(sharedPreferenceManager.preferences.getString("isFirstTime",null) != null){
-            Log.d("FBLOG", "in onCreate SP - isFirstTime == false");
-            dataBaseSource.populateDataNodeLists();
-            populateListView();
-        }
-        else {
-            Log.d("FBLOG", "in onCreate SP - isFirstTime == true");
-        }
+        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1);
+        listView.setAdapter(listAdapter);
+
 //        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
 //       startService(intent);
 //
@@ -92,22 +77,10 @@ public class MainActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
-        if(sharedPreferenceManager.preferences.getString("isFirstTime",null) == null){
-            Log.d("FBLOG", "in onPause SP - isFirstTime == null");
-            sharedPreferenceManager.store("isFirstTime","false");
-            Log.d("FBLOG", "in onPause SP - isFirstTime is becoming "+ sharedPreferenceManager.preferences.getString("isFirstTime",null));
-
-        }
     }
 
-    public void populateListView(){
-        Log.d("FBLOG", "in populateListView");
-        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1);
-        Log.d("FBLOG", "in populateListView Checking: "+ dataBaseSource.dataNode1.size()+"");
-
-        listView.setAdapter(listAdapter);
-
-
+    public void notifyDataChanged(){
+       listAdapter.notifyDataSetChanged();
     }
 
     private void generateNotification(String s, PendingIntent pendingIntent) {

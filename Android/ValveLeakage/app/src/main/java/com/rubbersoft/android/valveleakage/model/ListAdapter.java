@@ -44,7 +44,7 @@ public class ListAdapter extends BaseAdapter {
      */
     @Override
     public Object getItem(int position) {
-        return data.get(data.size()-position-1);
+        return data.get(position);
     }
 
     /**

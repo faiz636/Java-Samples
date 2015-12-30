@@ -27,10 +27,10 @@ public class FirebaseHandler {
     }
 
     private void initChildRefs(){
-        node1 = firebaseRef.child("node1");
-        node2 = firebaseRef.child("node2");
-        node3 = firebaseRef.child("node3");
-        node4 = firebaseRef.child("node4");
+        node1 = firebaseRef.child(ConfigConstants.TABLE_NODE1);
+        node2 = firebaseRef.child(ConfigConstants.TABLE_NODE2);
+        node3 = firebaseRef.child(ConfigConstants.TABLE_NODE3);
+        node4 = firebaseRef.child(ConfigConstants.TABLE_NODE4);
         setSync();
     }
 

@@ -84,9 +84,10 @@ public class ListAdapter extends BaseAdapter {
         viewHolder.tv3.setText(String.valueOf(data.get(position).getTemperature()));
         viewHolder.tv4.setText(String.valueOf(data.get(position).getLPGConcentration()));
 
-        if(Float.valueOf(data.get(position).getLPGConcentration()) > 200 ){
+        if(Float.valueOf(data.get(position).getLPGConcentration()) > 200f )
             viewHolder.tv4.setTextColor(Color.parseColor("red"));
-        }
+        else
+            viewHolder.tv4.setTextColor(Color.parseColor("black"));
 
         return v;
 

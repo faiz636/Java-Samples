@@ -30,12 +30,10 @@ public class ListAdapter extends BaseAdapter {
     boolean mVwasNull = false;
     private int mLastPosition;
     public int mFirstVisibleItem;
-    ListView mlistView;
 
-    public ListAdapter(Context context, List<Data> data, ListView listView) {
+    public ListAdapter(Context context, List<Data> data) {
         this.data = data;
         this.context = context;
-        this.mlistView = listView;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

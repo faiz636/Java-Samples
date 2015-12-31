@@ -24,14 +24,10 @@ public class CoreLeakageService extends Service {
 
     private IBinder mBinder = new LocalBinder();
     private ServiceCallBacks mserviceCallBacks;     //Use this object to call populateListView method in the activity class..
-    Intent node1receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
-            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE1);
-    Intent node2receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
-            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE2);
-    Intent node3receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
-            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE3);
-    Intent node4receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
-            .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE4);
+    Intent node1receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE1);
+    Intent node2receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE2);
+    Intent node3receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE3);
+    Intent node4receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE4);
 
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;

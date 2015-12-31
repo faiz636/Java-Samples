@@ -37,17 +37,14 @@ button that will generate notification for testing
         android:layout_alignParentTop="true"
         style="@android:style/ButtonBar"
         />
-    <ListView
-        android:id="@+id/listview"
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textview1"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/listview_itemdesign"
-        android:divider="@drawable/custom_divider"
-        android:dividerHeight="0.1dp"
-
-        />
+        android:dividerHeight="0.1dp" />
 
 
 </RelativeLayout>

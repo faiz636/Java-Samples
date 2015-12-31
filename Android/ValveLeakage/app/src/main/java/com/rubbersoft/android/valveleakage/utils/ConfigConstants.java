@@ -13,4 +13,9 @@ public class ConfigConstants {
     public static final String TABLE_NODE4 = "node4";
 
     public static final String INTENT_EXTRA_NODE = "nodeName";
+
+    public static final String RECEIVER_ACTION_NODE1 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE1";
+    public static final String RECEIVER_ACTION_NODE2 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE2";
+    public static final String RECEIVER_ACTION_NODE3 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE3";
+    public static final String RECEIVER_ACTION_NODE4 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE4";
 }

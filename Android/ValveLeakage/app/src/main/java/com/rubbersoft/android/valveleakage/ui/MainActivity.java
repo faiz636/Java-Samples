@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.rubbersoft.android.valveleakage.R;
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     PagerAdapter pagerAdapter;
-
+    TabLayout tabLayout;
     int j;
     int i;
 
@@ -42,15 +44,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
-
-//        listView = (ListView) findViewById(R.id.listview);
-//        dataBaseSource = ValveLeakageApplication.getDataBaseSource();
-//        sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
-
-//        listAdapter = new ListAdapter(MainActivity.this, dataBaseSource.dataNode1);
-//        listView.setAdapter(listAdapter);
-
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
 
 //        Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
 //       startService(intent);

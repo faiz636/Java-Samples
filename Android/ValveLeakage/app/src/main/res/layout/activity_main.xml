@@ -1,50 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context=".MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-<!--
-button that will generate notification for testing
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"/>
-
-    <TextView
-        android:id="@+id/textview1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Valve Leakage"
-        android:textSize="20sp"
-        android:layout_below="@id/button" />
--->
-
-    <TextView
-        android:id="@+id/textview1"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Node 1"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
-        android:layout_alignParentTop="true"
-        style="@android:style/ButtonBar"
-        />
+        android:background="@color/colorAccent"
+        android:minHeight="?android:attr/actionBarSize"
+        app:tabIndicatorColor="@color/colorPrimary"
+        app:tabIndicatorHeight="5dp"
+        app:tabSelectedTextColor="#fff"
+        app:tabTextColor="#fff" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textview1"
         android:layout_alignParentBottom="true"
+        android:layout_below="@+id/tab_layout"
         android:dividerHeight="0.1dp" />
-
 
 </RelativeLayout>

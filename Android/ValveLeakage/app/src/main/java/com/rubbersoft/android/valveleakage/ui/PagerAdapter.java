@@ -38,4 +38,20 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mNumOfTabs;
     }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "Node 1";
+            case 1:
+                return "Node 2";
+            case 2:
+                return "Node 3";
+            case 3:
+                return "Node 4";
+            default:
+                return "unknown";
+        }
+    }
 }

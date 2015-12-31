@@ -3,4 +3,4 @@ Firebase rules aint restricting from reading the data older than a day..
 
 Notifications is not integrated.. (TODO comment in CoreLeakageService)
 
-Data is beign fetched and stored correctly just for the first node, others node should have to be implemented..
+Add tabs in view pager..

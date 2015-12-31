@@ -123,7 +123,6 @@ public class ListAdapter extends BaseAdapter {
         ObjectAnimator xTransAnim = ObjectAnimator.ofFloat(v, "translationX", 0,parent.getWidth()/4);
         xTransAnim.setInterpolator(new CustomInerpolator());
         xTransAnim.setDuration(200);
-        xTransAnim.start();
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(fadeAnim).with(xTransAnim);

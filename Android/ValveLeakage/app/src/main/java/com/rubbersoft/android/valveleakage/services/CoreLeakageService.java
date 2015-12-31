@@ -67,17 +67,6 @@ public class CoreLeakageService extends Service {
         firebaseHandler.getNode4Ref().removeEventListener(node4ChildEventListener);
     }
 
-    private long findTimeToKeepData() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),0,0,0);
-        char[] temp = String.valueOf(calendar.getTimeInMillis()).toCharArray();
-        temp[temp.length-1]='0';
-        temp[temp.length-2]='0';
-        temp[temp.length-3]='0';
-        temp[temp.length-4]='0';
-        return Long.valueOf(String.valueOf(temp));
-    }
-
     private void implementFirebaseListeners() {
         Log.d("FBLOG",  "in implementFirebaseListeners");
         firebaseHandler.getNode1Ref().orderByChild("timestamp").addChildEventListener(node1ChildEventListener);

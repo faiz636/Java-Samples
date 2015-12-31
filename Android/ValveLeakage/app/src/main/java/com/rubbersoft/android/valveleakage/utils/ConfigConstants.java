@@ -11,4 +11,6 @@ public class ConfigConstants {
     public static final String TABLE_NODE2 = "node2";
     public static final String TABLE_NODE3 = "node3";
     public static final String TABLE_NODE4 = "node4";
+
+    public static final String INTENT_EXTRA_NODE = "nodeName";
 }

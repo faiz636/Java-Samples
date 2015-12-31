@@ -8,9 +8,9 @@ import android.util.Log;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
-import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
+import com.rubbersoft.android.valveleakage.firebase.ChildEventListenerAdapter;
 import com.rubbersoft.android.valveleakage.firebase.FirebaseHandler;
 import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.ui.MainActivity;
@@ -19,56 +19,35 @@ import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class CoreLeakageService extends Service {
 
     private IBinder mBinder = new LocalBinder();
     private ServiceCallBacks mserviceCallBacks;     //Use this object to call populateListView method in the activity class..
-    Intent receiverIntent = new Intent(MainActivity.RECEIVER_ACTION);
+    Intent node1receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
+            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE1);
+    Intent node2receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
+            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE2);
+    Intent node3receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
+            .putExtra(ConfigConstants.INTENT_EXTRA_NODE,ConfigConstants.TABLE_NODE3);
+    Intent node4receiverIntent = new Intent(MainActivity.RECEIVER_ACTION)
+            .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE4);
 
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
     long startingTimeStamp;
     Query ref;
-    ChildEventListener childEventListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Data data = dataSnapshot.getValue(Data.class);
-            dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE1);
-            sendBroadcast(receiverIntent);
-
-//            TODO: Call your notification genenartor method here
-
-            Log.d("FBLOG", data.getTimestamp() + "");
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    };
+    ChildEventListener node1ChildEventListener,
+            node2ChildEventListener,
+            node3ChildEventListener,
+            node4ChildEventListener;
 
     public CoreLeakageService() {
         dataBaseSource = ValveLeakageApplication.getDataBaseSource();
         firebaseHandler = ValveLeakageApplication.getFirebaseHandler();
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
+        createChildEventListeners();
     }
 
     @Override
@@ -86,8 +65,10 @@ public class CoreLeakageService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d("FBLOG", "in onDestroy");
-        ref.removeEventListener(childEventListener);
-
+        firebaseHandler.getNode1Ref().removeEventListener(node1ChildEventListener);
+        firebaseHandler.getNode2Ref().removeEventListener(node2ChildEventListener);
+        firebaseHandler.getNode3Ref().removeEventListener(node3ChildEventListener);
+        firebaseHandler.getNode4Ref().removeEventListener(node4ChildEventListener);
     }
 
     private long findTimeToKeepData() {
@@ -103,11 +84,11 @@ public class CoreLeakageService extends Service {
 
     private void implementFirebaseListeners() {
         Log.d("FBLOG",  "in implementFirebaseListeners");
-        ref = firebaseHandler.getNode1Ref().orderByChild("timestamp");
-        ref.addChildEventListener(childEventListener);
+        firebaseHandler.getNode1Ref().orderByChild("timestamp").addChildEventListener(node1ChildEventListener);
+        firebaseHandler.getNode2Ref().orderByChild("timestamp").addChildEventListener(node2ChildEventListener);
+        firebaseHandler.getNode3Ref().orderByChild("timestamp").addChildEventListener(node3ChildEventListener);
+        firebaseHandler.getNode4Ref().orderByChild("timestamp").addChildEventListener(node4ChildEventListener);
     }
-
-
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -131,5 +112,59 @@ public class CoreLeakageService extends Service {
 
     public void setCallBacksForService(ServiceCallBacks serviceCallBacks){
         this.mserviceCallBacks = serviceCallBacks;
+    }
+
+    private void createChildEventListeners(){
+        node1ChildEventListener  = new ChildEventListenerAdapter() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Data data = dataSnapshot.getValue(Data.class);
+                dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE1);
+                sendBroadcast(node1receiverIntent);
+
+//            TODO: Call your notification genenartor method here
+
+                Log.d("FBLOG", data.getTimestamp() + "");
+            }
+        };
+
+        node2ChildEventListener  = new ChildEventListenerAdapter() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Data data = dataSnapshot.getValue(Data.class);
+                dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE2);
+                sendBroadcast(node2receiverIntent);
+
+//            TODO: Call your notification genenartor method here
+
+                Log.d("FBLOG", data.getTimestamp() + "");
+            }
+        };
+
+        node3ChildEventListener  = new ChildEventListenerAdapter() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Data data = dataSnapshot.getValue(Data.class);
+                dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE3);
+                sendBroadcast(node3receiverIntent);
+
+//            TODO: Call your notification genenartor method here
+
+                Log.d("FBLOG", data.getTimestamp() + "");
+            }
+        };
+
+        node4ChildEventListener  = new ChildEventListenerAdapter() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Data data = dataSnapshot.getValue(Data.class);
+                dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE4);
+                sendBroadcast(node4receiverIntent);
+
+//            TODO: Call your notification genenartor method here
+
+                Log.d("FBLOG", data.getTimestamp() + "");
+            }
+        };
     }
 }

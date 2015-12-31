@@ -6,40 +6,39 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.content.IntentFilter;
 import android.util.Log;
-import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.rubbersoft.android.valveleakage.R;
-
-
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
+import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
+    public static final String RECEIVER_ACTION = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION";
     ListView listView;
     ListAdapter listAdapter;
     DataBaseSource dataBaseSource;
     SharedPreferenceManager sharedPreferenceManager;
-    int j;
 //    PendingIntent pendingIntent;
-
+    int j;
     int i;
-    public static final String RECEIVER_ACTION = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION";
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("FBLOG", "in onReceive");
-            notifyDataChanged();
+            String s = (String) intent.getExtras().get(ConfigConstants.INTENT_EXTRA_NODE);
+            if (s != null) {
+                notifyDataChanged(s);
+            }
         }
     };
 
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity{
         dataBaseSource = ValveLeakageApplication.getDataBaseSource();
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
 
-        listAdapter = new ListAdapter(MainActivity.this,dataBaseSource.dataNode1, listView);
+        listAdapter = new ListAdapter(MainActivity.this, dataBaseSource.dataNode1, listView);
         listView.setAdapter(listAdapter);
 
 
@@ -82,8 +81,18 @@ public class MainActivity extends AppCompatActivity{
         unregisterReceiver(broadcastReceiver);
     }
 
-    public void notifyDataChanged(){
-       listAdapter.notifyDataSetChanged();
+    public void notifyDataChanged(String s) {
+        switch (s) {
+            case ConfigConstants.TABLE_NODE1:
+                listAdapter.notifyDataSetChanged();
+                break;
+            case ConfigConstants.TABLE_NODE2:
+                break;
+            case ConfigConstants.TABLE_NODE3:
+                break;
+            case ConfigConstants.TABLE_NODE4:
+                break;
+        }
     }
 
     private void generateNotification(String s, PendingIntent pendingIntent) {

@@ -3,47 +3,63 @@ package com.rubbersoft;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.rubbersoft.model.SheetData;
 import com.rubbersoft.model.SheetRow;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * Created by Faiz on 27/12/2015.
  */
-public class FirebaseDummyDataSender implements Runnable{
+public class FirebaseDummyDataSender implements Runnable {
 
     private static final String FIREBASE_URL = "https://incandescent-torch-9709.firebaseio.com/";
-    private boolean mWait;
     private static Firebase mRootRef;
     private static AuthData mUserAuth;
-    private Thread mThread;
-    private String status,threadName;
     private static int runCounter;
-
     static {
         mRootRef = new Firebase(FIREBASE_URL);
     }
+    private boolean mWait;
+    private Thread mThread;
+    private String status, threadName;
 
     public FirebaseDummyDataSender() {
-        this.mThread = new Thread(this,"FirebaseDummyDataSender");
+        this.mThread = new Thread(this, "FirebaseDummyDataSender");
         this.mWait = true;
     }
 
-    public Thread getThread(){
+    /**
+     * try to connect google
+     *
+     * @return true if connection is established else false
+     */
+    private static boolean netIsAvailable() {
+        try {
+            final URL url = new URL("http://www.google.com");
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            return true;
+        } catch (MalformedURLException e) {
+            //this exception will occur if url is incorrect
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public Thread getThread() {
         return mThread;
     }
 
     @Override
     public void run() {
-        threadName = "DummyThread-"+runCounter++;
+        threadName = "DummyThread-" + runCounter++;
         checkForInterNetConnection();
-        if (mUserAuth==null){
+        if (mUserAuth == null) {
             loginUser("a@b.com", "123");
         }
         sendData();
@@ -64,12 +80,11 @@ public class FirebaseDummyDataSender implements Runnable{
         printMessage("Internet Available, proceeding...");
     }
 
-
     /**
      * create a user with the email and password provided for firebase authentication
      *
      * @param email email of the user
-     * @param pass password of the user for firebase authentication
+     * @param pass  password of the user for firebase authentication
      */
     public void createUser(String email, String pass) {
         mWait = true;
@@ -96,10 +111,10 @@ public class FirebaseDummyDataSender implements Runnable{
      * authenticate with firebase database
      *
      * @param email user email
-     * @param pass user password
-     * */
+     * @param pass  user password
+     */
     public synchronized void loginUser(String email, String pass) {
-        if(mUserAuth!=null) return;
+        if (mUserAuth != null) return;
         mWait = true;
         printMessage("logging in user");
         mRootRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
@@ -123,25 +138,6 @@ public class FirebaseDummyDataSender implements Runnable{
     }
 
     /**
-     * try to connect google
-     *
-     * @return true if connection is established else false
-     */
-    private static boolean netIsAvailable() {
-        try {
-            final URL url = new URL("http://www.google.com");
-            final URLConnection conn = url.openConnection();
-            conn.connect();
-            return true;
-        } catch (MalformedURLException e) {
-            //this exception will occur if url is incorrect
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    /**
      * Send data to firebase passed to this thread.
      * Each data item will be sent to firebase separately
      * then waits for its completion.
@@ -150,21 +146,21 @@ public class FirebaseDummyDataSender implements Runnable{
     private void sendData() {
         long t;
         t = System.currentTimeMillis();
-        SheetRow.FirebaseData dummyFirebaseData = new SheetRow.FirebaseData(t,80,100);
         final int[] wait = {0};
         for (int i = 0; i < 4; i++) {
-                wait[0]++;
-                mRootRef.child("node" + (i + 1)).push().setValue(dummyFirebaseData, new Firebase.CompletionListener() {
-                    @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                        if (firebaseError == null) {
-                            printMessage("row sent");
-                        } else {
-                            processErrorCode(firebaseError);
-                        }
-                        mWait = --wait[0] > 0;
+            wait[0]++;
+            SheetRow.FirebaseData dummyFirebaseData = new SheetRow.FirebaseData(t, (float) (150 * Math.random()), (float) (400 * Math.random()));
+            mRootRef.child("node" + (i + 1)).push().setValue(dummyFirebaseData, new Firebase.CompletionListener() {
+                @Override
+                public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                    if (firebaseError == null) {
+                        printMessage("row sent");
+                    } else {
+                        processErrorCode(firebaseError);
                     }
-                });
+                    mWait = --wait[0] > 0;
+                }
+            });
             printMessage("All rows sent");
         }
         mWait = wait[0] > 0;
@@ -194,8 +190,8 @@ public class FirebaseDummyDataSender implements Runnable{
         printMessage("waiting end");
     }
 
-    private void printMessage(String message){
-        System.out.println(threadName + "--" + message );
+    private void printMessage(String message) {
+        System.out.println(threadName + "--" + message);
     }
 
     /**

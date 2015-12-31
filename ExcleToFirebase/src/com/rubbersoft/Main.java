@@ -15,10 +15,22 @@ public class Main {
     private static TimeUnit TIME_UNIT = TimeUnit.MINUTES, TIME_UNIT_DUMMY = TimeUnit.SECONDS;
     private static final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(10);
+    public static long DUMMY_TIME_ADVANCE;
 
     public static void main(String[] args) {
         if (args.length>0 && args[0].compareTo("dummy")==0){
             System.out.println("will run dummy task");
+            if (args.length>1 && args[1].compareTo("old")==0){
+                int days = 1;
+                if (args.length>2){
+                    try {
+                        days = Integer.parseInt(args[2]);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                DUMMY_TIME_ADVANCE = 1000*60*60*24*days;
+            }
             scheduleDummyTask();
         }else {
             if (args.length>0) {

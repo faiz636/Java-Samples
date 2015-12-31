@@ -100,6 +100,9 @@ public class SheetRow {
             temperature = Integer.parseInt(row.getColumn(6));//temperature
             LPGConcentration = Integer.parseInt(row.getColumn(7));//LPGConcentration
         }
+        public FirebaseData(long timestamp, long temperature, long LPGConcentration) {
+            this(timestamp,(float)temperature,(float)LPGConcentration);
+        }
 
         public FirebaseData(long timestamp, float temperature, float LPGConcentration) {
             this.timestamp = timestamp;

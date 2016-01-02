@@ -1,6 +1,7 @@
+handle intents coming from notification
 
-Firebase rules aint restricting from reading the data older than a day..
+dismiss notification if in application
 
-Notifications is not integrated.. (TODO comment in CoreLeakageService)
+startAt specific time
 
-Add tabs in view pager..
+add broadcast listeners for boot device and network connectivity

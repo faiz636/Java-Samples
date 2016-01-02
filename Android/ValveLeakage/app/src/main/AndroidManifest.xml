@@ -27,7 +27,8 @@
         <service
             android:name=".services.CoreLeakageService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false"
+            android:process="CoreLeakageService">
 
         </service>
     </application>

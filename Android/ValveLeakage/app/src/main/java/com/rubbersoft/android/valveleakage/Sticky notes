@@ -1,7 +1,7 @@
-handle intents coming from notification
+handle intents coming from notification :progress - always gets node1 from intent extra
 
-dismiss notification if in application
+dismiss notification if in application - todo
 
-startAt specific time
+startAt specific time - progress: current time - 1 day
 
-add broadcast listeners for boot device and network connectivity
+add broadcast listeners for boot device and network connectivity - todo

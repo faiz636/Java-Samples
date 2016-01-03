@@ -27,14 +27,9 @@ public class CoreLeakageService extends Service {
 
     private static final String TAG = "CoreLeakageService";
 
-    Intent node1receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE1);
-    Intent node2receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE2);
-    Intent node3receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE3);
-    Intent node4receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE4);
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
-    long startingTimeStamp;
     PendingIntent pendingIntentNode1,
             pendingIntentNode2,
             pendingIntentNode3,
@@ -100,13 +95,13 @@ public class CoreLeakageService extends Service {
     }
 
     private void initChildEventListeners() {
-        node1ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE1, "NODE 1", node1receiverIntent, pendingIntentNode1, ConfigConstants.NODE1_NOTIFICATION_ID);
-        node2ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE2, "NODE 2", node2receiverIntent, pendingIntentNode2, ConfigConstants.NODE2_NOTIFICATION_ID);
-        node3ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE3, "NODE 3", node3receiverIntent, pendingIntentNode3, ConfigConstants.NODE3_NOTIFICATION_ID);
-        node4ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE4, "NODE 4", node4receiverIntent, pendingIntentNode4, ConfigConstants.NODE4_NOTIFICATION_ID);
+        node1ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE1, "NODE 1", pendingIntentNode1, ConfigConstants.NODE1_NOTIFICATION_ID);
+        node2ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE2, "NODE 2", pendingIntentNode2, ConfigConstants.NODE2_NOTIFICATION_ID);
+        node3ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE3, "NODE 3", pendingIntentNode3, ConfigConstants.NODE3_NOTIFICATION_ID);
+        node4ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE4, "NODE 4", pendingIntentNode4, ConfigConstants.NODE4_NOTIFICATION_ID);
     }
 
-    private ChildEventListener createChildEventListeners(final String nodeNameConfigConstant, final String nodeNotificationString, final Intent nodeBroadcastIntent, final PendingIntent notificationPendingIntent, final int notificationID) {
+    private ChildEventListener createChildEventListeners(final String nodeNameConfigConstant, final String nodeNotificationString, final PendingIntent notificationPendingIntent, final int notificationID) {
         return new ChildEventListenerAdapter() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -114,7 +109,6 @@ public class CoreLeakageService extends Service {
                 Data data = dataSnapshot.getValue(Data.class);
                 data.setKey(dataSnapshot.getKey());
                 dataBaseSource.insertData(data, nodeNameConfigConstant);
-                sendBroadcast(nodeBroadcastIntent);
 
                 if (sharedPreferenceManager.retrieveLong(nodeNameConfigConstant) < data.getTimestamp() && data.getLPGConcentration() >= 200) {
                     if (!ValveLeakageApplication.isActivityResumed(ConfigConstants.ui.MainActivity)) {
@@ -127,7 +121,6 @@ public class CoreLeakageService extends Service {
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 dataBaseSource.removeData(dataSnapshot.getKey(), nodeNameConfigConstant);
-                sendBroadcast(nodeBroadcastIntent);
             }
         };
     }

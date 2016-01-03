@@ -1,3 +1,2 @@
-add broadcast listeners for boot device/start service on device boot - done
-call broadcast form database not from child listeners - todo
+send broadcast form database for data change not from child listeners - done
 

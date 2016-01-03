@@ -1,7 +1,10 @@
-handle intents coming from notification :progress - always gets node1 from intent extra
-
-dismiss notification if in application - todo
-
-startAt specific time - progress: current time - 1 day
+respond to child remove call - done
+startAt specific time - progress: current time - 1 day - done
+don't show notification already notified for - done
+don't show notification if application is in foreground - done
+dismiss notification on scrolling to respective tab - done
+handle intents coming from notification and scroll to respective tab- done
 
 add broadcast listeners for boot device and network connectivity - todo
+call broadcast form database not from child listeners - todo
+

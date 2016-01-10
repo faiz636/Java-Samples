@@ -147,11 +147,17 @@ public class FirebaseDataSender {
         t = System.currentTimeMillis();
         final int[] wait = {0};
         for (int i = 0; i < 4; i++) {
+            int j=0;
             ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
             printMessage("sending node " + (i + 1) + " data, size : " + list.size());
             for (SheetRow item : list) {
                 wait[0]++;
-                mRootRef.child("node" + (i + 1)).push().setValue(new SheetRow.FirebaseData(item), new Firebase.CompletionListener() {
+                System.out.println(" ------------> sending : "+ j++);
+//                System.out.println(item);
+                SheetRow.FirebaseData data = new SheetRow.FirebaseData(item);
+//                System.out.println(data);
+//                System.out.println("e -- "+SheetRow.FirebaseData.dateFormat.format(t));
+                mRootRef.child("node" + (i + 1)).push().setValue(data, new Firebase.CompletionListener() {
                     @Override
                     public void onComplete(FirebaseError firebaseError, Firebase firebase) {
                         if (firebaseError == null) {

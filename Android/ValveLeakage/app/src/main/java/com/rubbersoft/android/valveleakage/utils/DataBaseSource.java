@@ -22,28 +22,17 @@ public class DataBaseSource {
     public List<Data> dataNode3;
     public List<Data> dataNode4;
 
-    private Intent node1receiverIntent,
-            node2receiverIntent,
-            node3receiverIntent,
-            node4receiverIntent;
+    public Callback call1,call2,call3,call4;
 
     private DataBaseSource() {
         dataNode1 = new ArrayList<>();
         dataNode2 = new ArrayList<>();
         dataNode3 = new ArrayList<>();
         dataNode4 = new ArrayList<>();
-        initBroadcastIntents();
     }
 
     public static DataBaseSource getInstance() {
         return Holder.INSTANCE;
-    }
-
-    private void initBroadcastIntents(){
-        node1receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE1);
-        node2receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE2);
-        node3receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE3);
-        node4receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE4);
     }
 
     public void insertData(Data data, String nodeName) {
@@ -51,19 +40,27 @@ public class DataBaseSource {
         switch (nodeName) {
             case ConfigConstants.TABLE_NODE1:
                 dataNode1.add(0, data);
-                ValveLeakageApplication.getContext().sendBroadcast(node1receiverIntent);
+                if (call1!=null){
+                    call1.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE2:
                 dataNode2.add(0, data);
-                ValveLeakageApplication.getContext().sendBroadcast(node2receiverIntent);
+                if (call2!=null){
+                    call2.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE3:
                 dataNode3.add(0, data);
-                ValveLeakageApplication.getContext().sendBroadcast(node3receiverIntent);
+                if (call3!=null){
+                    call3.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE4:
                 dataNode4.add(0, data);
-                ValveLeakageApplication.getContext().sendBroadcast(node4receiverIntent);
+                if (call4!=null){
+                    call4.callback();
+                }
                 break;
             default:
                 AppLog.e(TAG + "-insertData", "insertData() called with wrong Node");
@@ -106,16 +103,24 @@ public class DataBaseSource {
         }
         switch (nodeName) {
             case ConfigConstants.TABLE_NODE1:
-                ValveLeakageApplication.getContext().sendBroadcast(node1receiverIntent);
+                if (call1!=null){
+                    call1.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE2:
-                ValveLeakageApplication.getContext().sendBroadcast(node2receiverIntent);
+                if (call2!=null){
+                    call2.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE3:
-                ValveLeakageApplication.getContext().sendBroadcast(node3receiverIntent);
+                if (call3!=null){
+                    call3.callback();
+                }
                 break;
             case ConfigConstants.TABLE_NODE4:
-                ValveLeakageApplication.getContext().sendBroadcast(node4receiverIntent);
+                if (call4!=null){
+                    call4.callback();
+                }
                 break;
         }
 

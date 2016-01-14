@@ -11,6 +11,7 @@ import android.support.v4.app.ListFragment;
 import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
 import com.rubbersoft.android.valveleakage.utils.AppLog;
+import com.rubbersoft.android.valveleakage.utils.Callback;
 import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 
@@ -31,20 +32,13 @@ public class ItemFragment extends ListFragment {
 
     // TODO: Rename and change types of parameters
     private String mNodeName;
-    private String mIntentFilter;
     private int mNotificationId;
 
     private Context context;
     private ListAdapter listAdapter;
     private List<Data> list;
+    Callback callback;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            AppLog.d(TAG + "-BR", "BroadcastReceiver -- " + mNodeName + " " + listAdapter.getCount());
-            notifyDataChanged();
-        }
-    };
 
 
     /**
@@ -71,25 +65,29 @@ public class ItemFragment extends ListFragment {
             mNodeName = getArguments().getString(ARG_PARAM1);
         }
 
+        callback = new Callback() {
+
+            @Override
+            public void callback() {
+                notifyDataChanged();
+            }
+        };
+
         switch (mNodeName) {
             case ConfigConstants.TABLE_NODE1:
                 list = DataBaseSource.getInstance().dataNode1;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE1;
                 mNotificationId = ConfigConstants.NODE1_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE2:
                 list = DataBaseSource.getInstance().dataNode2;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE2;
                 mNotificationId = ConfigConstants.NODE2_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE3:
                 list = DataBaseSource.getInstance().dataNode3;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE3;
                 mNotificationId = ConfigConstants.NODE3_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE4:
                 list = DataBaseSource.getInstance().dataNode4;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE4;
                 mNotificationId = ConfigConstants.NODE4_NOTIFICATION_ID;
                 break;
         }
@@ -113,13 +111,40 @@ public class ItemFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        context.registerReceiver(broadcastReceiver, new IntentFilter(mIntentFilter));
+        switch (mNodeName) {
+            case ConfigConstants.TABLE_NODE1:
+                DataBaseSource.getInstance().call1 = callback;
+                break;
+            case ConfigConstants.TABLE_NODE2:
+                DataBaseSource.getInstance().call1 = callback;
+                break;
+            case ConfigConstants.TABLE_NODE3:
+                DataBaseSource.getInstance().call1 = callback;
+                break;
+            case ConfigConstants.TABLE_NODE4:
+                DataBaseSource.getInstance().call1 = callback;
+                break;
+        }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        context.unregisterReceiver(broadcastReceiver);
+        switch (mNodeName) {
+            case ConfigConstants.TABLE_NODE1:
+                DataBaseSource.getInstance().call1 = null;
+                break;
+            case ConfigConstants.TABLE_NODE2:
+                DataBaseSource.getInstance().call1 = null;
+                break;
+            case ConfigConstants.TABLE_NODE3:
+                DataBaseSource.getInstance().call1 = null;
+                break;
+            case ConfigConstants.TABLE_NODE4:
+                DataBaseSource.getInstance().call1 = null;
+                break;
+        }
     }
 
     public void notifyDataChanged() {

@@ -21,6 +21,11 @@ public class DataBaseSource {
     public List<Data> dataNode3;
     public List<Data> dataNode4;
 
+    public Callback dataChangeCallback1;
+    public Callback dataChangeCallback2;
+    public Callback dataChangeCallback3;
+    public Callback dataChangeCallback4;
+
     public static DataBaseSource getInstance(){
         return Holder.INSTANCE;
     }
@@ -40,15 +45,19 @@ public class DataBaseSource {
         switch (nodeName){
             case ConfigConstants.TABLE_NODE1:
                 dataNode1.add(0,data);
+                dataChangeCallback1.callback();
                 break;
             case ConfigConstants.TABLE_NODE2:
                 dataNode2.add(0,data);
+                dataChangeCallback2.callback();
                 break;
             case ConfigConstants.TABLE_NODE3:
                 dataNode3.add(0,data);
+                dataChangeCallback3.callback();
                 break;
             case ConfigConstants.TABLE_NODE4:
                 dataNode4.add(0,data);
+                dataChangeCallback4.callback();
                 break;
             default:
                 AppLog.e("MuzammilQadri","insertData() called with wrong Node");

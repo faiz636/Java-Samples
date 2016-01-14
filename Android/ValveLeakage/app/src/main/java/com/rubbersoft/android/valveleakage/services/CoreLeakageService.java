@@ -26,10 +26,6 @@ import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
 public class CoreLeakageService extends Service {
 
-    Intent node1receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE1);
-    Intent node2receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE2);
-    Intent node3receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE3);
-    Intent node4receiverIntent = new Intent(ConfigConstants.RECEIVER_ACTION_NODE4);
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
@@ -98,7 +94,6 @@ public class CoreLeakageService extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Data data = dataSnapshot.getValue(Data.class);
                 dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE1);
-                sendBroadcast(node1receiverIntent);
 
                 if (data.getLPGConcentration() >= 200) {
                     generateNotification(1, "Node 1", data.getTimestamp(), pendingIntentNode1);
@@ -112,7 +107,6 @@ public class CoreLeakageService extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Data data = dataSnapshot.getValue(Data.class);
                 dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE2);
-                sendBroadcast(node2receiverIntent);
 
                 if (data.getLPGConcentration() >= 200) {
                     generateNotification(2, "Node 2", data.getTimestamp(), pendingIntentNode2);
@@ -126,7 +120,6 @@ public class CoreLeakageService extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Data data = dataSnapshot.getValue(Data.class);
                 dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE3);
-                sendBroadcast(node3receiverIntent);
 
                 if (data.getLPGConcentration() >= 200) {
                     generateNotification(3, "Node 3", data.getTimestamp(), pendingIntentNode3);
@@ -140,7 +133,6 @@ public class CoreLeakageService extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Data data = dataSnapshot.getValue(Data.class);
                 dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE4);
-                sendBroadcast(node4receiverIntent);
 
                 if (data.getLPGConcentration() >= 200) {
                     generateNotification(4, "Node 4", data.getTimestamp(), pendingIntentNode4);

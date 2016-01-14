@@ -9,6 +9,7 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
+import com.rubbersoft.android.valveleakage.utils.Callback;
 import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 
@@ -28,18 +29,10 @@ public class ItemFragment extends ListFragment {
 
     // TODO: Rename and change types of parameters
     private String mNodeName;
-    private String mIntentFilter;
 
     private Context context;
     private ListAdapter listAdapter;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("FBLOG", "in onReceive");
-            notifyDataChanged();
-        }
-    };
+    private Callback callback;
 
 
     /**
@@ -67,22 +60,25 @@ public class ItemFragment extends ListFragment {
         }
         List list = null;
 
+        callback = new Callback() {
+            @Override
+            public void callback() {
+                notifyDataChanged();
+            }
+        };
+
         switch (mNodeName) {
             case ConfigConstants.TABLE_NODE1:
                 list = DataBaseSource.getInstance().dataNode1;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE1;
                 break;
             case ConfigConstants.TABLE_NODE2:
                 list = DataBaseSource.getInstance().dataNode2;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE2;
                 break;
             case ConfigConstants.TABLE_NODE3:
                 list = DataBaseSource.getInstance().dataNode3;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE3;
                 break;
             case ConfigConstants.TABLE_NODE4:
                 list = DataBaseSource.getInstance().dataNode4;
-                mIntentFilter = ConfigConstants.RECEIVER_ACTION_NODE4;
                 break;
         }
 
@@ -108,13 +104,42 @@ public class ItemFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        context.registerReceiver(broadcastReceiver, new IntentFilter(mIntentFilter));
+        switch (mNodeName) {
+            case ConfigConstants.TABLE_NODE1:
+                DataBaseSource.getInstance().dataChangeCallback1 = callback;
+                return;
+            case ConfigConstants.TABLE_NODE2:
+                DataBaseSource.getInstance().dataChangeCallback2 = callback;
+                return;
+            case ConfigConstants.TABLE_NODE3:
+                DataBaseSource.getInstance().dataChangeCallback3 = callback;
+                return;
+            case ConfigConstants.TABLE_NODE4:
+                DataBaseSource.getInstance().dataChangeCallback4 = callback;
+                return;
+        }
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        context.unregisterReceiver(broadcastReceiver);
+        switch (mNodeName) {
+            case ConfigConstants.TABLE_NODE1:
+                DataBaseSource.getInstance().dataChangeCallback1 = null;
+                return;
+            case ConfigConstants.TABLE_NODE2:
+                DataBaseSource.getInstance().dataChangeCallback2 = null;
+                return;
+            case ConfigConstants.TABLE_NODE3:
+                DataBaseSource.getInstance().dataChangeCallback3 = null;
+                return;
+            case ConfigConstants.TABLE_NODE4:
+                DataBaseSource.getInstance().dataChangeCallback4 = null;
+                return;
+        }
+
+
     }
 
     public void notifyDataChanged() {

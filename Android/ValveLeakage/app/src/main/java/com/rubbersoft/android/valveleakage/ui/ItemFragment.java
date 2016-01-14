@@ -1,14 +1,16 @@
 package com.rubbersoft.android.valveleakage.ui;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 
+import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
+import com.rubbersoft.android.valveleakage.utils.AppLog;
 import com.rubbersoft.android.valveleakage.utils.Callback;
 import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
@@ -26,13 +28,17 @@ public class ItemFragment extends ListFragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private static final String TAG = "ItemFragment";
 
     // TODO: Rename and change types of parameters
     private String mNodeName;
+    private int mNotificationId;
 
     private Context context;
     private ListAdapter listAdapter;
-    private Callback callback;
+    private List<Data> list;
+    Callback callback;
+
 
 
     /**
@@ -58,9 +64,9 @@ public class ItemFragment extends ListFragment {
         if (getArguments() != null) {
             mNodeName = getArguments().getString(ARG_PARAM1);
         }
-        List list = null;
 
         callback = new Callback() {
+
             @Override
             public void callback() {
                 notifyDataChanged();
@@ -70,24 +76,25 @@ public class ItemFragment extends ListFragment {
         switch (mNodeName) {
             case ConfigConstants.TABLE_NODE1:
                 list = DataBaseSource.getInstance().dataNode1;
+                mNotificationId = ConfigConstants.NODE1_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE2:
                 list = DataBaseSource.getInstance().dataNode2;
+                mNotificationId = ConfigConstants.NODE2_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE3:
                 list = DataBaseSource.getInstance().dataNode3;
+                mNotificationId = ConfigConstants.NODE3_NOTIFICATION_ID;
                 break;
             case ConfigConstants.TABLE_NODE4:
                 list = DataBaseSource.getInstance().dataNode4;
+                mNotificationId = ConfigConstants.NODE4_NOTIFICATION_ID;
                 break;
         }
 
         listAdapter = new ListAdapter(getActivity(), list);
-
-        // TODO: Change Adapter to display your content
         setListAdapter(listAdapter);
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -106,17 +113,17 @@ public class ItemFragment extends ListFragment {
         super.onResume();
         switch (mNodeName) {
             case ConfigConstants.TABLE_NODE1:
-                DataBaseSource.getInstance().dataChangeCallback1 = callback;
-                return;
+                DataBaseSource.getInstance().call1 = callback;
+                break;
             case ConfigConstants.TABLE_NODE2:
-                DataBaseSource.getInstance().dataChangeCallback2 = callback;
-                return;
+                DataBaseSource.getInstance().call1 = callback;
+                break;
             case ConfigConstants.TABLE_NODE3:
-                DataBaseSource.getInstance().dataChangeCallback3 = callback;
-                return;
+                DataBaseSource.getInstance().call1 = callback;
+                break;
             case ConfigConstants.TABLE_NODE4:
-                DataBaseSource.getInstance().dataChangeCallback4 = callback;
-                return;
+                DataBaseSource.getInstance().call1 = callback;
+                break;
         }
 
     }
@@ -126,20 +133,18 @@ public class ItemFragment extends ListFragment {
         super.onPause();
         switch (mNodeName) {
             case ConfigConstants.TABLE_NODE1:
-                DataBaseSource.getInstance().dataChangeCallback1 = null;
-                return;
+                DataBaseSource.getInstance().call1 = null;
+                break;
             case ConfigConstants.TABLE_NODE2:
-                DataBaseSource.getInstance().dataChangeCallback2 = null;
-                return;
+                DataBaseSource.getInstance().call1 = null;
+                break;
             case ConfigConstants.TABLE_NODE3:
-                DataBaseSource.getInstance().dataChangeCallback3 = null;
-                return;
+                DataBaseSource.getInstance().call1 = null;
+                break;
             case ConfigConstants.TABLE_NODE4:
-                DataBaseSource.getInstance().dataChangeCallback4 = null;
-                return;
+                DataBaseSource.getInstance().call1 = null;
+                break;
         }
-
-
     }
 
     public void notifyDataChanged() {

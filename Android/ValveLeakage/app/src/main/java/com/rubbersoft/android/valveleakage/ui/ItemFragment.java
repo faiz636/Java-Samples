@@ -1,14 +1,13 @@
 package com.rubbersoft.android.valveleakage.ui;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 
-import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.model.ListAdapter;
 import com.rubbersoft.android.valveleakage.utils.Callback;
 import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
@@ -27,7 +26,6 @@ public class ItemFragment extends ListFragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String TAG = "ItemFragment";
 
     // TODO: Rename and change types of parameters
     private String mNodeName;
@@ -60,6 +58,7 @@ public class ItemFragment extends ListFragment {
         if (getArguments() != null) {
             mNodeName = getArguments().getString(ARG_PARAM1);
         }
+        List list = null;
 
         callback = new Callback() {
             @Override
@@ -84,8 +83,11 @@ public class ItemFragment extends ListFragment {
         }
 
         listAdapter = new ListAdapter(getActivity(), list);
+
+        // TODO: Change Adapter to display your content
         setListAdapter(listAdapter);
     }
+
 
     @Override
     public void onAttach(Context context) {

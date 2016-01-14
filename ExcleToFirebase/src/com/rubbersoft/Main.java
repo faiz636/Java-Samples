@@ -16,6 +16,7 @@ public class Main {
     private static final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(10);
     public static long DUMMY_TIME_ADVANCE;
+    private static String FILE_NAME = "sheet.xls";
 
     public static void main(String[] args) {
         if (args.length>0 && args[0].compareTo("dummy")==0){
@@ -33,20 +34,24 @@ public class Main {
             }
             scheduleDummyTask();
         }else {
-            if (args.length>0) {
-                if (args.length > 0 && args[0].compareTo("min") == 0) {
-                    TIME_UNIT = TimeUnit.MINUTES;
-                } else if (args.length > 0 && args[0].compareTo("sec") == 0) {
-                    TIME_UNIT = TimeUnit.SECONDS;
-                }
-                try {
-                    INITIAL_DELAY = Integer.parseInt(args[1]);
-                    PERIOD = Integer.parseInt(args[2]);
-                }catch (ArrayIndexOutOfBoundsException e){
-                    System.out.println("invalid Arguments");
-                    e.printStackTrace();
-                }
+            if (args.length>0){
 
+                Main.FILE_NAME = args[0];
+
+                if (args.length>1) {
+                    if (args.length > 0 && args[0].compareTo("min") == 0) {
+                        TIME_UNIT = TimeUnit.MINUTES;
+                    } else if (args.length > 0 && args[0].compareTo("sec") == 0) {
+                        TIME_UNIT = TimeUnit.SECONDS;
+                    }
+                    try {
+                        INITIAL_DELAY = Integer.parseInt(args[1]);
+                        PERIOD = Integer.parseInt(args[2]);
+                    }catch (ArrayIndexOutOfBoundsException e){
+                        System.out.println("invalid Arguments");
+                        e.printStackTrace();
+                    }
+                }
             }
             scheduleTask();
         }
@@ -76,7 +81,7 @@ public class Main {
         String s;
 
         do {
-            System.out.print("enter string  :");
+            System.out.println("enter string  :");
         } while (!((s = in.nextLine()).contentEquals("exit")));
 
         System.out.println("shut down sequence started.");
@@ -99,7 +104,7 @@ public class Main {
     public static void fileReaderTask() {
 //        long t;
 //        t = System.currentTimeMillis();
-        ArrayList<SheetData> sheetDataList = ExcelToJava.readFile("sheet.xls");
+        ArrayList<SheetData> sheetDataList = ExcelToJava.readFile(Main.FILE_NAME);
 //        System.out.println("file reading total time taken " + (System.currentTimeMillis() - t) + "ms, " + ((System.currentTimeMillis() - t) / (1000)) + "sec");
 //        t = System.currentTimeMillis();
         new FirebaseDataSender(sheetDataList);

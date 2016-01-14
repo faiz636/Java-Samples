@@ -1,7 +1,2 @@
-handle intents coming from notification :progress - always gets node1 from intent extra
+send broadcast form database for data change not from child listeners - done
 
-dismiss notification if in application - todo
-
-startAt specific time - progress: current time - 1 day
-
-add broadcast listeners for boot device and network connectivity - todo

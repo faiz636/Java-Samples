@@ -36,6 +36,8 @@ public class ExcelToJava {
                 SheetData sheetData = new SheetData();
                 sheetDataList.add(sheetData);
 
+                System.out.println("----------------------------------------------------------------------------");
+
                 int size = sheet.getRows();
                 boolean invalidData;
                 printMessage("reading sheet " + sheetNo + "  and size : " + size);
@@ -43,6 +45,7 @@ public class ExcelToJava {
                 for (int i = START_POINT.get(sheetNo); i < size; i++) {
                     SheetRow sheetRow = new SheetRow();
                     invalidData = false;
+                    System.out.print(i);
                     for (int j = 0; j <= 7; j++) {
                     /*
                     This will print each cell before adding it into the column..
@@ -55,16 +58,18 @@ public class ExcelToJava {
                             printMessage("row " + i + " is invalid");
                             break;
                         }
+                        System.out.print(" -- "+s);
 
                         sheetRow.setColumn(s);
                     }
+                    System.out.println();
                     if (invalidData) continue;
                     sheetData.addRow(sheetRow);
                 }
                 START_POINT.put(sheetNo,size);
             }
             workbook.close();
-            writeExcelPointers();
+//            writeExcelPointers();
             i++;
             return sheetDataList;
 

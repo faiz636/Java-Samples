@@ -29,8 +29,12 @@ public class SharedPreferenceManager {
     }
 
     private void checkIfFirstTime() {
-        if(preferences.getString("isFirstTime",null) == null){
-            editorpreferences.putLong("timestamp",0);
+        if(preferences.getBoolean("isFirstTime",true)){
+            editorpreferences.putLong(ConfigConstants.TABLE_NODE1,0);
+            editorpreferences.putLong(ConfigConstants.TABLE_NODE2,0);
+            editorpreferences.putLong(ConfigConstants.TABLE_NODE3,0);
+            editorpreferences.putLong(ConfigConstants.TABLE_NODE4,0);
+            editorpreferences.putBoolean("isFirstTime",false);
         }
     }
 

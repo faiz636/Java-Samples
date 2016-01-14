@@ -9,17 +9,16 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
-import com.firebase.client.Query;
 import com.rubbersoft.android.valveleakage.R;
 import com.rubbersoft.android.valveleakage.ValveLeakageApplication;
 import com.rubbersoft.android.valveleakage.firebase.ChildEventListenerAdapter;
 import com.rubbersoft.android.valveleakage.firebase.FirebaseHandler;
 import com.rubbersoft.android.valveleakage.model.Data;
 import com.rubbersoft.android.valveleakage.ui.MainActivity;
+import com.rubbersoft.android.valveleakage.utils.AppLog;
 import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
@@ -29,8 +28,6 @@ public class CoreLeakageService extends Service {
     DataBaseSource dataBaseSource;
     FirebaseHandler firebaseHandler;
     SharedPreferenceManager sharedPreferenceManager;
-    long startingTimeStamp;
-    Query ref;
     PendingIntent pendingIntentNode1,
             pendingIntentNode2,
             pendingIntentNode3,
@@ -50,20 +47,19 @@ public class CoreLeakageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.d("FBLOG", "in onStartCommand");
+        AppLog.i(TAG, "in onStartCommand");
 
         initPendingIntents();
-        createChildEventListeners();
+        initChildEventListeners();
         implementFirebaseListeners();
 
         return START_STICKY;
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("FBLOG", "in onDestroy");
+        AppLog.i(TAG, "in onDestroy");
         firebaseHandler.getNode1Ref().removeEventListener(node1ChildEventListener);
         firebaseHandler.getNode2Ref().removeEventListener(node2ChildEventListener);
         firebaseHandler.getNode3Ref().removeEventListener(node3ChildEventListener);
@@ -71,11 +67,19 @@ public class CoreLeakageService extends Service {
     }
 
     private void implementFirebaseListeners() {
-        Log.d("FBLOG", "in implementFirebaseListeners");
-        firebaseHandler.getNode1Ref().orderByChild("timestamp").addChildEventListener(node1ChildEventListener);
-        firebaseHandler.getNode2Ref().orderByChild("timestamp").addChildEventListener(node2ChildEventListener);
-        firebaseHandler.getNode3Ref().orderByChild("timestamp").addChildEventListener(node3ChildEventListener);
-        firebaseHandler.getNode4Ref().orderByChild("timestamp").addChildEventListener(node4ChildEventListener);
+        AppLog.d(TAG, "in implementFirebaseListeners");
+        firebaseHandler.getNode1Ref().orderByChild("timestamp")
+                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
+                .addChildEventListener(node1ChildEventListener);
+        firebaseHandler.getNode2Ref().orderByChild("timestamp")
+                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
+                .addChildEventListener(node2ChildEventListener);
+        firebaseHandler.getNode3Ref().orderByChild("timestamp")
+                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
+                .addChildEventListener(node3ChildEventListener);
+        firebaseHandler.getNode4Ref().orderByChild("timestamp")
+                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
+                .addChildEventListener(node4ChildEventListener);
     }
 
     @Override
@@ -113,11 +117,12 @@ public class CoreLeakageService extends Service {
                 }
                 Log.d("FBLOG", data.getTimestamp() + "");
             }
-        };
 
-        node3ChildEventListener = new ChildEventListenerAdapter() {
+    private ChildEventListener createChildEventListeners(final String nodeNameConfigConstant, final String nodeNotificationString, final PendingIntent notificationPendingIntent, final int notificationID) {
+        return new ChildEventListenerAdapter() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                AppLog.d(TAG + "-CA-" + nodeNameConfigConstant, dataSnapshot.toString());
                 Data data = dataSnapshot.getValue(Data.class);
                 dataBaseSource.insertData(data, ConfigConstants.TABLE_NODE3);
 
@@ -126,9 +131,9 @@ public class CoreLeakageService extends Service {
                 }
                 Log.d("FBLOG", data.getTimestamp() + "");
             }
-        };
+                }
+            }
 
-        node4ChildEventListener = new ChildEventListenerAdapter() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Data data = dataSnapshot.getValue(Data.class);
@@ -198,14 +203,37 @@ public class CoreLeakageService extends Service {
     }
 
     private void initPendingIntents() {
-        pendingIntentNode1 = PendingIntent.getActivity(this, 1, new Intent(this, MainActivity.class).putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE1), 0);
-        pendingIntentNode2 = PendingIntent.getActivity(this, 1, new Intent(this, MainActivity.class).putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE2), 0);
-        pendingIntentNode3 = PendingIntent.getActivity(this, 1, new Intent(this, MainActivity.class).putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE3), 0);
-        pendingIntentNode4 = PendingIntent.getActivity(this, 1, new Intent(this, MainActivity.class).putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE4), 0);
-    }
+        pendingIntentNode1 = PendingIntent.getActivity(this,
+                ConfigConstants.NODE1_NOTIFICATION_ID,//for requesting pending intent using notification id as it unique for each node
+                new Intent(this, MainActivity.class)
+                        .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE1)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                , PendingIntent.FLAG_UPDATE_CURRENT);
 
-    public static interface ServiceCallBacks {
-        public void populateListView();
+        pendingIntentNode2 = PendingIntent.getActivity(this,
+                ConfigConstants.NODE2_NOTIFICATION_ID,//for requesting pending intent using notification id as it unique for each node
+                new Intent(this, MainActivity.class)
+                        .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE2)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                , PendingIntent.FLAG_UPDATE_CURRENT);
+
+        pendingIntentNode3 = PendingIntent.getActivity(this,
+                ConfigConstants.NODE3_NOTIFICATION_ID,//for requesting pending intent using notification id as it unique for each node
+                new Intent(this, MainActivity.class)
+                        .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE3)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                , PendingIntent.FLAG_UPDATE_CURRENT);
+
+        pendingIntentNode4 = PendingIntent.getActivity(this,
+                ConfigConstants.NODE4_NOTIFICATION_ID,//for requesting pending intent using notification id as it unique for each node
+                new Intent(this, MainActivity.class)
+                        .putExtra(ConfigConstants.INTENT_EXTRA_NODE, ConfigConstants.TABLE_NODE4)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                , PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public class LocalBinder extends Binder {

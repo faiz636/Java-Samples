@@ -145,7 +145,7 @@ public class FirebaseDummyDataSender implements Runnable {
      */
     private void sendData() {
         long t;
-        t = System.currentTimeMillis();
+        t = System.currentTimeMillis()- Main.DUMMY_TIME_ADVANCE;
         final int[] wait = {0};
         for (int i = 0; i < 4; i++) {
             wait[0]++;

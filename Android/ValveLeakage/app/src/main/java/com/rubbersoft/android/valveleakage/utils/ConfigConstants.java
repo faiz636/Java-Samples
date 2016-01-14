@@ -1,5 +1,7 @@
 package com.rubbersoft.android.valveleakage.utils;
 
+import android.content.Context;
+
 /**
  * Created by Muhammad Faizan Khan on 26/12/15.
  */
@@ -18,4 +20,13 @@ public class ConfigConstants {
     public static final String RECEIVER_ACTION_NODE2 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE2";
     public static final String RECEIVER_ACTION_NODE3 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE3";
     public static final String RECEIVER_ACTION_NODE4 = "com.rubbersoft.android.valveleakage.ui.MainActivity.RECEIVER_ACTION.NODE4";
+
+    public static final int NODE1_NOTIFICATION_ID = 1,
+            NODE2_NOTIFICATION_ID = 2,
+            NODE3_NOTIFICATION_ID = 3,
+            NODE4_NOTIFICATION_ID = 4;
+
+    public static interface ui {
+        String MainActivity = "ui.MainActivity";
+    }
 }

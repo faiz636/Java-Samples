@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 public class Data {
     private long timestamp;
     private float temperature,LPGConcentration;
+    private String key;
 
     public Data(){}
 
@@ -33,5 +34,13 @@ public class Data {
 
     public void setLPGConcentration(float LPGConcentration) {
         this.LPGConcentration = LPGConcentration;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

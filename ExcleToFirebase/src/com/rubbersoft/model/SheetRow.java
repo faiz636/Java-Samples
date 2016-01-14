@@ -1,5 +1,6 @@
 package com.rubbersoft.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
@@ -75,6 +76,14 @@ public class SheetRow {
         return this.column.size();
     }
 
+    @Override
+    public String toString() {
+        String x = "";
+        for (String s : column){
+            x+=" -- "+s;
+        }
+        return x;
+    }
 
     /**
      * This class will be used to send data to Firebase
@@ -83,22 +92,26 @@ public class SheetRow {
      * in the required format
     * */
     public static class FirebaseData {
+        public final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd hh:mm:ss a");
         private long timestamp;
         private float temperature,LPGConcentration;
 
         FirebaseData(){}
 
         public FirebaseData(SheetRow row){
+            int year = Integer.parseInt(row.getColumn(0)),//year
+                    month = Integer.parseInt(row.getColumn(1)),//month
+                    day = Integer.parseInt(row.getColumn(2)),//date
+                    hour = Integer.parseInt(row.getColumn(3)),//hour
+                    min = Integer.parseInt(row.getColumn(4)),//minute
+                    sec = (int)Float.parseFloat(row.getColumn(5));//second
+
             timestamp = new GregorianCalendar(
-                    Integer.parseInt(row.getColumn(0)),//year
-                    Integer.parseInt(row.getColumn(1)),//month
-                    Integer.parseInt(row.getColumn(2)),//date
-                    Integer.parseInt(row.getColumn(3)),//hour
-                    Integer.parseInt(row.getColumn(4)),//minute
-                    (int)Float.parseFloat(row.getColumn(5))//second
+                    year,month-1,day,hour,min,sec
             ).getTimeInMillis();
-            temperature = Integer.parseInt(row.getColumn(6));//temperature
-            LPGConcentration = Integer.parseInt(row.getColumn(7));//LPGConcentration
+
+            temperature = Float.parseFloat(row.getColumn(6));//temperature
+            LPGConcentration = Float.parseFloat(row.getColumn(7));//LPGConcentration
         }
         public FirebaseData(long timestamp, long temperature, long LPGConcentration) {
             this(timestamp,(float)temperature,(float)LPGConcentration);
@@ -133,5 +146,11 @@ public class SheetRow {
         public void setLPGConcentration(float LPGConcentration) {
             this.LPGConcentration = LPGConcentration;
         }
+
+        @Override
+        public String toString() {
+            return dateFormat.format(timestamp)+" -- "+ temperature +" -- "+ LPGConcentration;
+        }
+
     }
 }

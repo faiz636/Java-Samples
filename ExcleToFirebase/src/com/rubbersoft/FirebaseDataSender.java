@@ -19,31 +19,32 @@ import java.util.Map;
  */
 public class FirebaseDataSender {
 
+    //address of firebase databse
     private static final String FIREBASE_URL = "https://incandescent-torch-9709.firebaseio.com/";
-    private boolean mWait;
-    private static Firebase mRootRef;
-    private static AuthData mUserAuth;
-    private ArrayList<SheetData> sheetDataList;
-    private String threadName;
-    private static int runCounter;
+    private boolean mWait;//flag for wait operation
+    private static Firebase mRootRef;//usable root reference for firebase database
+    private static AuthData mUserAuth;//authentication data from firebase
+    private ArrayList<SheetData> sheetDataList;//list of sheet data to be send
+    private String threadName;//name of running instance
+    private static int runCounter;//to check which run it is
 
     static {
-        mRootRef = new Firebase(FIREBASE_URL);
+        mRootRef = new Firebase(FIREBASE_URL);//create firebase root reference
     }
 
     public FirebaseDataSender(ArrayList<SheetData> sheetDataList) {
-        this.sheetDataList = sheetDataList;
+        this.sheetDataList = sheetDataList;//save data base object
         this.mWait = true;
-        run();
+        run();//start necessary operation
     }
 
     public void run() {
-        threadName = "FirebaseDataSender-"+runCounter++;
-        checkForInterNetConnection();
-        if (mUserAuth==null){
+        threadName = "FirebaseDataSender-"+runCounter++;//set name of running instance and counter
+        checkForInterNetConnection();//check for internet connection
+        if (mUserAuth==null){//login if not authenticated
             loginUser("a@b.com", "123");
         }
-        sendData();
+        sendData();//send data to firebase
     }
 
     /**
@@ -53,39 +54,12 @@ public class FirebaseDataSender {
         while (!netIsAvailable()) {
             printMessage("Internet Connection Not Available, Retrying In 5 sec...");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000);//wait for second
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
         printMessage("Internet Available, proceeding...");
-    }
-
-
-    /**
-     * create a user with the email and password provided for firebase authentication
-     *
-     * @param email email of the user
-     * @param pass password of the user for firebase authentication
-     */
-    public void createUser(String email, String pass) {
-        mWait = true;
-        mRootRef.createUser(email, pass, new Firebase.ValueResultHandler<Map<String, Object>>() {
-            @Override
-            public void onSuccess(Map<String, Object> result) {
-                printMessage("Successfully created user account with uid: " + result.get("uid"));
-                mWait = false;
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                // there was an error
-                processErrorCode(firebaseError);
-                mWait = false;
-            }
-        });
-        //wait for user creation
-        waitToCompleteOperation("waiting create user");
     }
 
     /**
@@ -95,25 +69,26 @@ public class FirebaseDataSender {
      * @param pass user password
      * */
     public synchronized void loginUser(String email, String pass) {
-        if(mUserAuth!=null) return;
+        if(mUserAuth!=null) return;//if already login
         mWait = true;
         printMessage("logging in user");
+        //authenticate with email and password
         mRootRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
             @Override
-            public void onAuthenticated(AuthData authData) {
+            public void onAuthenticated(AuthData authData) {//firebase response if authentication is success
                 printMessage("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
                 FirebaseDataSender.mUserAuth = authData;
                 mWait = false;
             }
 
             @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
+            public void onAuthenticationError(FirebaseError firebaseError) {//firebase response if not unsuccessful
                 // there was an error
                 processErrorCode(firebaseError);
                 mWait = false;
             }
         });
-        waitToCompleteOperation("waiting for user to login");//this time wait for login
+        waitToCompleteOperation("waiting for user to login");//wait for login complete
         printMessage("user logged in");
     }
 
@@ -124,10 +99,10 @@ public class FirebaseDataSender {
      */
     private static boolean netIsAvailable() {
         try {
-            final URL url = new URL("http://www.google.com");
-            final URLConnection conn = url.openConnection();
-            conn.connect();
-            return true;
+            final URL url = new URL("http://www.google.com");//make a url
+            final URLConnection conn = url.openConnection();//obtain a connection with url
+            conn.connect();//connect with setver
+            return true;//will reach here only if connection is establish
         } catch (MalformedURLException e) {
             //this exception will occur if url is incorrect
             throw new RuntimeException(e);
@@ -143,36 +118,33 @@ public class FirebaseDataSender {
      * After completion next item in the collection will be sent
      */
     private void sendData() {
-        long t;
-        t = System.currentTimeMillis();
-        final int[] wait = {0};
-        for (int i = 0; i < 4; i++) {
+        final int[] wait = {0};//waiting counter in array
+        for (int i = 0; i < 4; i++) {//loop for sheet
             int j=0;
             ArrayList<SheetRow> list = sheetDataList.get(i).getAllRows();
             printMessage("sending node " + (i + 1) + " data, size : " + list.size());
-            for (SheetRow item : list) {
-                wait[0]++;
+            for (SheetRow item : list) {//loop for rows
+                wait[0]++;//increase wile sending data
                 System.out.println(" ------------> sending : "+ j++);
-//                System.out.println(item);
+                //get firebase data
                 SheetRow.FirebaseData data = new SheetRow.FirebaseData(item);
-//                System.out.println(data);
-//                System.out.println("e -- "+SheetRow.FirebaseData.dateFormat.format(t));
+                //send data to firebase
                 mRootRef.child("node" + (i + 1)).push().setValue(data, new Firebase.CompletionListener() {
                     @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {//response for data sent
                         if (firebaseError == null) {
                             printMessage("row sent");
                         } else {
                             processErrorCode(firebaseError);
                         }
-                        mWait = --wait[0] > 0;
+                        mWait = --wait[0] > 0;//decrement wait counter and update wait flag
                     }
                 });
             }
             printMessage("All rows sent");
         }
         mWait = wait[0] > 0;
-        waitToCompleteOperation("data sent waiting for acknowledgement");
+        waitToCompleteOperation("data sent waiting for acknowledgement");//wait for data to be sent
         printMessage("All nodes data sent");
     }
 
@@ -183,10 +155,10 @@ public class FirebaseDataSender {
      */
     public void waitToCompleteOperation(String s) {
         int i = 0;
-        while (mWait) {
+        while (mWait) {//if wait is enable
             try {
                 printMessage(s + "--" + i++);
-                Thread.sleep(500);
+                Thread.sleep(500);//wait for 500 ms
                 if (!netIsAvailable()) {
                     printMessage("Connection Lost");
                 }
@@ -197,6 +169,7 @@ public class FirebaseDataSender {
         printMessage("waiting end");
     }
 
+    //print formatted data
     private void printMessage(String message){
         System.out.println(threadName + "--" + message);
     }

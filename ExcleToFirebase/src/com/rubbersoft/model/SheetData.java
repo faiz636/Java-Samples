@@ -7,7 +7,8 @@ import java.util.ArrayList;
  */
 public class SheetData {
 
-    private ArrayList<SheetRow> rows;
+    private ArrayList<SheetRow> rows;//list of rows
+    //constructor
     public SheetData(){
         rows = new ArrayList<SheetRow>();
     }

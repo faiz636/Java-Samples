@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
  */
 public class SheetRow {
 
-    private ArrayList<String> column;
+    private ArrayList<String> column;//data for each column
 
     public SheetRow(){
         column =  new ArrayList<String>();

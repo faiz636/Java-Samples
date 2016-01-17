@@ -5,6 +5,9 @@ import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 
 /**
  * Created by Faiz on 26/12/2015.
+ * for firebase operations
+ * singleton class
+ * maintaining all the required reference for further use
  */
 public class FirebaseHandler {
 
@@ -15,14 +18,14 @@ public class FirebaseHandler {
 
     private FirebaseHandler() {
         firebaseRef = new Firebase(ConfigConstants.FIREBASE_URL);
-        initChildRefs();
+        initChildRefs();//initlize child refferences
     }
 
     public static synchronized FirebaseHandler getInstance(){
         return Holder.INSTANCE;
     }
 
-    private static class Holder {
+    private static class Holder {//for avoiding race condition for singleton
         static final FirebaseHandler INSTANCE = new FirebaseHandler ();
     }
 

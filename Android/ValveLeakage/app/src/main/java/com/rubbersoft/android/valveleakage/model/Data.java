@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 
 /**
  * Created by Faiz on 26/12/2015.
+ * class used to save data from firebas
  */
 public class Data {
     private long timestamp;

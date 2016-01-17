@@ -6,6 +6,7 @@ import com.firebase.client.FirebaseError;
 
 /**
  * Created by Faiz on 31/12/2015.
+ * empty interface implementation for use in project
  */
 public class ChildEventListenerAdapter implements ChildEventListener {
 

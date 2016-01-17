@@ -21,11 +21,12 @@ import java.util.List;
 
 /**
  * Created by Muhammad Muzammil on 27-Dec-15.
+ * adapter used to show data in list
  */
 public class ListAdapter extends BaseAdapter {
 
-    LayoutInflater mInflater;
-    List<Data> data;
+    LayoutInflater mInflater;//used to inflate layouts
+    List<Data> data;//data to be shown
     Context context;
     boolean mVwasNull = false;
     private int mLastPosition;
@@ -34,9 +35,14 @@ public class ListAdapter extends BaseAdapter {
     public ListAdapter(Context context, List<Data> data) {
         this.data = data;
         this.context = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//getting inflator setvice
     }
 
+    /**
+     * Get size of list
+     *
+     * @return The size of data list
+     */
     @Override
     public int getCount(){
         return data.size();
@@ -65,9 +71,14 @@ public class ListAdapter extends BaseAdapter {
         return position;
     }
 
+    /**
+     * called every time when a view is to created and data to be refreshed.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+        if (convertView == null) {//checking view is already created
+
+            //create view
             convertView = mInflater.inflate(R.layout.listview_singleitem, null,false);
             ViewHolder viewHolder = new ViewHolder();
 
@@ -101,11 +112,10 @@ public class ListAdapter extends BaseAdapter {
     }
 
     private void checkIfErrorInLpg(int position, ViewHolder viewHolder) {
+        //set background color to red if value is leakage value
         if(Float.valueOf(data.get(position).getLPGConcentration()) > 200f ){
             viewHolder.tv4.setTextColor(Color.parseColor("black"));
             viewHolder.tv4.setBackgroundColor(Color.parseColor("#FF0000"));
-
-
         }
         else{
             viewHolder.tv4.setBackgroundColor(0);
@@ -116,19 +126,30 @@ public class ListAdapter extends BaseAdapter {
     private void implementCustomAnimations(ViewGroup parent, View v) {
         Log.d("LA", "mLastPosition < position");
 
+        //animation for transprancy
         ObjectAnimator fadeAnim = ObjectAnimator.ofFloat(v, "alpha", 0f, 1f);
         fadeAnim.setInterpolator(new AccelerateInterpolator());
         fadeAnim.setDuration(200);
 
+        //animation for
         ObjectAnimator xTransAnim = ObjectAnimator.ofFloat(v, "translationX", 0,parent.getWidth()/4);
         xTransAnim.setInterpolator(new CustomInerpolator());
         xTransAnim.setDuration(200);
 
+        //create animator set to run animation
         AnimatorSet animatorSet = new AnimatorSet();
+
+        //add animations to set
         animatorSet.play(fadeAnim).with(xTransAnim);
+
+        //run animations
         animatorSet.start();
     }
 
+    /*
+    * Class to hold reference of already  created views
+    * to avoid finding it every time needed
+    */
     static class ViewHolder {
         public TextView tv1;
         public TextView tv2;

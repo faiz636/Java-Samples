@@ -7,6 +7,7 @@ import static java.lang.Math.sin;
 
 /**
  * Created by Muhammad Muzammil on 30-Dec-15.
+ * for animation in list
  */
 public class CustomInerpolator extends BounceInterpolator {
 

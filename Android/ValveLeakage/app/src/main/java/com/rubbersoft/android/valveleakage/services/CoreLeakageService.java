@@ -23,21 +23,37 @@ import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 import com.rubbersoft.android.valveleakage.utils.DataBaseSource;
 import com.rubbersoft.android.valveleakage.utils.SharedPreferenceManager;
 
+/*
+* service that runs in background receive data from firebase
+* generate notification if data is of leakage
+* add data to list which can be used to show in list
+* */
 public class CoreLeakageService extends Service {
 
     private static final String TAG = "CoreLeakageService";
 
-    DataBaseSource dataBaseSource;
-    FirebaseHandler firebaseHandler;
-    SharedPreferenceManager sharedPreferenceManager;
-    PendingIntent pendingIntentNode1,
-            pendingIntentNode2,
-            pendingIntentNode3,
-            pendingIntentNode4;
-    ChildEventListener node1ChildEventListener,
-            node2ChildEventListener,
-            node3ChildEventListener,
-            node4ChildEventListener;
+    DataBaseSource dataBaseSource;//data handler
+    FirebaseHandler firebaseHandler;//firebase handler used for firebase
+    SharedPreferenceManager sharedPreferenceManager;//used to read and write data to Shared Preferences
+
+    /*
+    * pending intent used for notification
+    * which knows what to open on clicking notification
+    * */
+    PendingIntent pendingIntentNode1;
+    PendingIntent pendingIntentNode2;
+    PendingIntent pendingIntentNode3;
+    PendingIntent pendingIntentNode4;
+
+    /*
+    * child event listeners used to read data from firebase
+    * this type of listener is used to read arrays
+    * each one is used to read data for each node
+    * */
+    ChildEventListener node1ChildEventListener;
+    ChildEventListener node2ChildEventListener;
+    ChildEventListener node3ChildEventListener;
+    ChildEventListener node4ChildEventListener;
     private IBinder mBinder = new LocalBinder();
 
     public CoreLeakageService() {
@@ -46,18 +62,26 @@ public class CoreLeakageService extends Service {
         sharedPreferenceManager = ValveLeakageApplication.getSharedPreferenceManager();
     }
 
+    /*
+    * this is the method called on starting service
+    * here we write what to do
+    * */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         AppLog.i(TAG, "in onStartCommand");
 
-        initPendingIntents();
-        initChildEventListeners();
-        implementFirebaseListeners();
+        initPendingIntents();//initializing Pending Intents for notification
+        initChildEventListeners();//initializing Child Event Listeners that recieve data
+        implementFirebaseListeners();//implement Firebase Listeners to start receiving data
 
-        return START_STICKY;
+        return START_STICKY;//this tells android how to handle this service
     }
 
+    /*
+    * this method is called when the service is being destroyed by android system
+    * here we remove the listeners used to receive data
+    * */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -68,18 +92,25 @@ public class CoreLeakageService extends Service {
         firebaseHandler.getNode4Ref().removeEventListener(node4ChildEventListener);
     }
 
+    /*
+    * this method is used to set listeners to receive data form fireabse
+    * */
     private void implementFirebaseListeners() {
         AppLog.d(TAG, "in implementFirebaseListeners");
-        firebaseHandler.getNode1Ref().orderByChild("timestamp")
-                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
-                .addChildEventListener(node1ChildEventListener);
-        firebaseHandler.getNode2Ref().orderByChild("timestamp")
+        firebaseHandler.getNode1Ref()
+                .orderByChild("timestamp")//generate a query to tell in what arrangement to send data
+                .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)//setting starting value to a day before
+                .addChildEventListener(node1ChildEventListener);//setting listener
+        firebaseHandler.getNode2Ref()
+                .orderByChild("timestamp")
                 .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
                 .addChildEventListener(node2ChildEventListener);
-        firebaseHandler.getNode3Ref().orderByChild("timestamp")
+        firebaseHandler.getNode3Ref()
+                .orderByChild("timestamp")
                 .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
                 .addChildEventListener(node3ChildEventListener);
-        firebaseHandler.getNode4Ref().orderByChild("timestamp")
+        firebaseHandler.getNode4Ref()
+                .orderByChild("timestamp")
                 .startAt(System.currentTimeMillis() - 1000 * 60 * 60 * 24)
                 .addChildEventListener(node4ChildEventListener);
     }
@@ -94,6 +125,9 @@ public class CoreLeakageService extends Service {
         return false;
     }
 
+    /*
+    * this method initialize listeners for each node
+    * */
     private void initChildEventListeners() {
         node1ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE1, "NODE 1", pendingIntentNode1, ConfigConstants.NODE1_NOTIFICATION_ID);
         node2ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE2, "NODE 2", pendingIntentNode2, ConfigConstants.NODE2_NOTIFICATION_ID);
@@ -101,23 +135,35 @@ public class CoreLeakageService extends Service {
         node4ChildEventListener = createChildEventListeners(ConfigConstants.TABLE_NODE4, "NODE 4", pendingIntentNode4, ConfigConstants.NODE4_NOTIFICATION_ID);
     }
 
+    /*
+    * create Child Event Listeners listener with specified parameters
+    * */
     private ChildEventListener createChildEventListeners(final String nodeNameConfigConstant, final String nodeNotificationString, final PendingIntent notificationPendingIntent, final int notificationID) {
         return new ChildEventListenerAdapter() {
+
+            /*
+            * this method is called if new data is added
+            * */
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 AppLog.d(TAG + "-CA-" + nodeNameConfigConstant, dataSnapshot.toString());
-                Data data = dataSnapshot.getValue(Data.class);
-                data.setKey(dataSnapshot.getKey());
-                dataBaseSource.insertData(data, nodeNameConfigConstant);
+                Data data = dataSnapshot.getValue(Data.class);//retrieve data received
+                data.setKey(dataSnapshot.getKey());//get the key of the object and save to data object
+                dataBaseSource.insertData(data, nodeNameConfigConstant);//add data to specified list
 
-                if (sharedPreferenceManager.retrieveLong(nodeNameConfigConstant) < data.getTimestamp() && data.getLPGConcentration() >= 200) {
-                    if (!ValveLeakageApplication.isActivityResumed(ConfigConstants.ui.MainActivity)) {
-                        generateNotification(notificationID, nodeNotificationString, data.getTimestamp(), notificationPendingIntent);
-                    }
+                //check value for leakage
+                //check if notification to be generated
+                if (data.getLPGConcentration() >= 200 && sharedPreferenceManager.retrieveLong(nodeNameConfigConstant) < data.getTimestamp()) {
+                    //generate notification for the node
+                    generateNotification(notificationID, nodeNotificationString, data.getTimestamp(), notificationPendingIntent);
+                    //update sharedPreferenceManager this new notification
                     sharedPreferenceManager.store(nodeNameConfigConstant, data.getTimestamp());
                 }
             }
 
+            /*
+            * this method is called when already added data is removed
+            * */
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 dataBaseSource.removeData(dataSnapshot.getKey(), nodeNameConfigConstant);
@@ -135,36 +181,11 @@ public class CoreLeakageService extends Service {
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setSmallIcon(R.drawable.ic_stat)
-//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setContentIntent(pendingIntent)
-//                .setColor(0xF44336)
-//                .setContentInfo("Information")
                 .setAutoCancel(true)
-//                .addAction(R.drawable.icon_small, "First Action", pendingIntent)
         ;
-/*
-//        set Visibility of your notification
-        notificationBuilder.setVisibility(Notification.VISIBILITY_PRIVATE)
-//                if it is set to PRIVATE this notification will be shown on lock screen
-//                then set a public version of your notification which will be shown on
-//                unlocked device which will contain all information
-                .setPublicVersion(publicNotification);
-*/
 
-/*
-//        building expanded inbox style notification
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Now This BIG Content Title");
-        inboxStyle.setSummaryText("This Is Summary Text");
-//        adding line for each message
-        for(int i=0;i<5;i++){
-            inboxStyle.addLine("Inbox Message "+i);
-        }
-//        setting expanded notification style
-        notificationBuilder.setStyle(inboxStyle);
-*/
-
-//        code for android device older then JELLY_BEAN
+//        code for android devices after JELLY_BEAN
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
         }
@@ -180,6 +201,7 @@ public class CoreLeakageService extends Service {
         notificationManager.notify(i, notificationBuilder.build());
     }
 
+//    initialize pending intents for notification
     private void initPendingIntents() {
         pendingIntentNode1 = PendingIntent.getActivity(this,
                 ConfigConstants.NODE1_NOTIFICATION_ID,//for requesting pending intent using notification id as it unique for each node

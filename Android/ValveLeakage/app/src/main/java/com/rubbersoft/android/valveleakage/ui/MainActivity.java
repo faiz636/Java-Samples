@@ -16,10 +16,6 @@ import com.rubbersoft.android.valveleakage.utils.ConfigConstants;
 
 public class MainActivity extends AppCompatActivity {
 
-//    ListView listView;
-//    ListAdapter listAdapter;
-//    DataBaseSource dataBaseSource;
-//    SharedPreferenceManager sharedPreferenceManager;
     private static final String TAG = "MainActivity";
 
     ViewPager viewPager;

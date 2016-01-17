@@ -50,11 +50,6 @@ public class ValveLeakageApplication extends Application {
         return sharedPreferenceManager;
     }
 
-    public static boolean isActivityResumed(String activityName){
-        Boolean b = states.get(activityName);
-        return b!=null&&b;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -68,8 +63,6 @@ public class ValveLeakageApplication extends Application {
 
         Intent intent = new Intent(getApplicationContext(), CoreLeakageService.class);
         startService(intent);
-
-        registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks());
     }
 
     private void initializeSingletons() {
@@ -78,40 +71,4 @@ public class ValveLeakageApplication extends Application {
         sharedPreferenceManager = SharedPreferenceManager.getInstance();
     }
 
-    private static final class MyActivityLifecycleCallbacks implements ActivityLifecycleCallbacks {
-
-        private static final String TAG = "MyActivityLifecycleCallbacks";
-
-        public void onActivityCreated(Activity activity, Bundle bundle) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityCreated:" + activity.getLocalClassName());
-
-        }
-
-        public void onActivityDestroyed(Activity activity) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityDestroyed:" + activity.getLocalClassName());
-        }
-
-        public void onActivityPaused(Activity activity) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityPaused:" + activity.getLocalClassName());
-            states.put(activity.getLocalClassName(),false);
-        }
-
-        public void onActivityResumed(Activity activity) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityResumed:" + activity.getLocalClassName());
-            states.put(activity.getLocalClassName(),true);
-        }
-
-        public void onActivitySaveInstanceState(Activity activity,
-                                                Bundle outState) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivitySaveInstanceState:" + activity.getLocalClassName());
-        }
-
-        public void onActivityStarted(Activity activity) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityStarted:" + activity.getLocalClassName());
-        }
-
-        public void onActivityStopped(Activity activity) {
-            AppLog.i(ValveLeakageApplication.TAG + "-" + TAG, "onActivityStopped:" + activity.getLocalClassName());
-        }
-    }
 }

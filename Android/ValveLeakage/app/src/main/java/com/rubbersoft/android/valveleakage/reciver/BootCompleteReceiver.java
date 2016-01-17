@@ -7,6 +7,10 @@ import android.widget.Toast;
 
 import com.rubbersoft.android.valveleakage.services.CoreLeakageService;
 
+/*
+* BroadcastReceiver to receiver boot complete broadcast
+* and start service to receive data
+* */
 public class BootCompleteReceiver extends BroadcastReceiver {
     public BootCompleteReceiver() {
     }
